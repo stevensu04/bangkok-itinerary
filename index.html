@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>🇹🇭 曼谷 9天8夜 自由行行程 & 建議審閱</title>
+  <style>
+    :root {
+      --primary-color: #d97706;
+      --primary-hover: #b45309;
+      --bg-color: #f8fafc;
+      --card-bg: #ffffff;
+      --text-color: #1e293b;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --accent-blue: #0284c7;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      line-height: 1.6;
+      padding: 20px 16px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    header {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+      padding: 24px;
+      border-radius: 16px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2);
+    }
+
+    header h1 {
+      font-size: 1.7rem;
+      margin-bottom: 8px;
+    }
+
+    header p {
+      opacity: 0.95;
+      font-size: 0.95rem;
+    }
+
+    .info-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 16px;
+    }
+
+    .info-item h3 {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .info-item p {
+      font-weight: 600;
+    }
+
+    .day-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    }
+
+    .day-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #f1f5f9;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+    }
+
+    .day-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-color);
+    }
+
+    .day-date {
+      font-size: 0.85rem;
+      background: #fef3c7;
+      color: #92400e;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .timeline {
+      list-style: none;
+      margin-bottom: 16px;
+    }
+
+    .timeline li {
+      position: relative;
+      padding-left: 20px;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+
+    .timeline li::before {
+      content: "•";
+      color: var(--primary-color);
+      font-size: 1.5rem;
+      position: absolute;
+      left: 0;
+      top: -6px;
+    }
+
+    /* Comment Section */
+    .comments-section {
+      background: #f8fafc;
+      border-top: 1px dashed var(--border-color);
+      padding: 14px;
+      border-radius: 8px;
+      margin-top: 14px;
+    }
+
+    .comments-header {
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--accent-blue);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .comment-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .comment-item {
+      background: #ffffff;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 0.9rem;
+    }
+
+    .comment-meta {
+      display: flex;
+      justify-content: space-between;
+      color: var(--text-muted);
+      font-size: 0.8rem;
+      margin-bottom: 4px;
+    }
+
+    .comment-author {
+      font-weight: 600;
+      color: var(--text-color);
+    }
+
+    .comment-content {
+      word-break: break-word;
+      color: var(--text-color);
+    }
+
+    .comment-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 6px;
+    }
+
+    .btn-text {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      text-decoration: underline;
+    }
+
+    .btn-text:hover {
+      color: var(--primary-color);
+    }
+
+    .btn-text.danger:hover {
+      color: #ef4444;
+    }
+
+    .comment-form {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    input[type="text"], textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 16px; /* iOS 聚焦不自動放大 */
+      outline: none;
+    }
+
+    input[type="text"]:focus, textarea:focus {
+      border-color: var(--primary-color);
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 55px;
+    }
+
+    .btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.95rem;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-secondary {
+      background: #64748b;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .export-container {
+      background: var(--card-bg);
+      border: 2px solid var(--accent-blue);
+      border-radius: 12px;
+      padding: 20px;
+      margin-top: 24px;
+      text-align: center;
+    }
+
+    .export-container h2 {
+      font-size: 1.2rem;
+      color: var(--accent-blue);
+      margin-bottom: 8px;
+    }
+
+    .export-container p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    /* 手機畫面最佳化 */
+    @media (max-width: 640px) {
+      body {
+        padding: 12px 10px;
+      }
+
+      header {
+        padding: 18px 14px;
+        border-radius: 12px;
+        margin-bottom: 14px;
+      }
+
+      header h1 {
+        font-size: 1.35rem;
+        line-height: 1.3;
+      }
+
+      header p {
+        font-size: 0.85rem;
+      }
+
+      .info-card {
+        padding: 14px;
+        margin-bottom: 14px;
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .day-card {
+        padding: 16px 14px;
+        border-radius: 12px;
+        margin-bottom: 14px;
+      }
+
+      .day-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .day-title {
+        font-size: 1.05rem;
+        line-height: 1.4;
+      }
+
+      .day-date {
+        font-size: 0.8rem;
+        padding: 2px 8px;
+      }
+
+      .timeline li {
+        font-size: 0.9rem;
+        padding-left: 18px;
+        margin-bottom: 8px;
+      }
+
+      .btn {
+        min-height: 42px;
+      }
+
+      .comment-form .btn {
+        width: 100%;
+      }
+
+      .btn-group {
+        flex-direction: column;
+      }
+
+      .btn-group .btn {
+        width: 100%;
+      }
+
+      .export-container {
+        padding: 16px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🇹🇭 曼谷 9天8夜 自由行行程規劃</h1>
+    <p>歡迎給予建議與修改意見！請在下方各天留下你的想法。</p>
+  </header>
+
+  <section class="info-card">
+    <div class="info-item">
+      <h3>去程航班 (BNE ➔ BKK)</h3>
+      <p>9/28 (一) 00:05 起飛（9/27晚到機場）</p>
+      <p style="font-weight: normal; font-size: 0.85rem; color: var(--text-muted);">國泰航空 11:05 抵達曼谷 BKK</p>
+    </div>
+    <div class="info-item">
+      <h3>回程航班 (BKK ➔ BNE)</h3>
+      <p>10/6 (二) 19:55 起飛</p>
+      <p style="font-weight: normal; font-size: 0.85rem; color: var(--text-muted);">越捷航空 (10/7 21:30 抵達 BNE)</p>
+    </div>
+  </section>
+
+  <!-- 靜態直接輸出行程，即使手機關閉 JS 也保證 100% 完整顯示 -->
+  <div id="itinerary-container">
+    
+    <!-- Day 1 -->
+    <div class="day-card" id="day-card-1">
+      <div class="day-header">
+        <span class="day-title">Day 1：抵達曼谷 ➔ 飯店 Check-in ➔ 舒壓按摩 ➔ Jodd Fairs 喬德夜市</span>
+        <span class="day-date">9/28 (一)</span>
+      </div>
+      <ul class="timeline">
+        <li>11:05 抵達 BKK 機場，搭乘機場快線或包車前往市區飯店 Check-in</li>
+        <li>下午：飯店周邊傳統泰式按摩，洗去飛行疲憊</li>
+        <li>晚上：逛 Jodd Fairs 喬德夜市（必吃火山排骨、水果冰沙）</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-1">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-1"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-1" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-1" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(1)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 2 -->
+    <div class="day-card" id="day-card-2">
+      <div class="day-header">
+        <span class="day-title">Day 2：大皇宮 & 臥佛寺 ➔ 河畔景觀餐廳 ➔ 鄭王廟泰服體驗 ➔ Asiatique 碼頭夜市</span>
+        <span class="day-date">9/29 (二)</span>
+      </div>
+      <ul class="timeline">
+        <li>早上：參觀大皇宮 & 玉佛寺、臥佛寺</li>
+        <li>中午：昭披耶河畔景觀餐廳享用午餐</li>
+        <li>下午：搭渡輪至對岸參觀鄭王廟 (Wat Arun)，體驗泰服拍攝</li>
+        <li>晚上：Asiatique 河濱碼頭夜市（摩天輪、河畔夜景）</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-2">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-2"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-2" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-2" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(2)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 3 -->
+    <div class="day-card" id="day-card-3">
+      <div class="day-header">
+        <span class="day-title">Day 3：Siam 暹羅商圈購物 ➔ 四面佛 ➔ 高空酒吧夜景</span>
+        <span class="day-date">9/30 (三)</span>
+      </div>
+      <ul class="timeline">
+        <li>白天：Siam Paragon / Siam Center / CentralWorld 逛街採買</li>
+        <li>下午：參拜四面佛、Big C 採買泰國零食伴手禮</li>
+        <li>晚上：前往 Red Sky 或 Octave 高空酒吧品嚐調酒、欣賞曼谷夜景</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-3">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-3"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-3" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-3" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(3)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 4 -->
+    <div class="day-card" id="day-card-4">
+      <div class="day-header">
+        <span class="day-title">Day 4：美功鐵道市場 & 水上市場一日遊 ➔ 中國城美食爆吃</span>
+        <span class="day-date">10/1 (四)</span>
+      </div>
+      <ul class="timeline">
+        <li>全天：近郊一日遊（美功鐵道市場看火車過攤販、丹嫩莎朵/安帕瓦水上市場搭手搖船）</li>
+        <li>晚上：回到曼谷 Chinatown (耀華力路) 吃米其林街頭美食（蟹鉗麵、豬血湯、燕窩）</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-4">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-4"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-4" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-4" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(4)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 5 -->
+    <div class="day-card" id="day-card-5">
+      <div class="day-header">
+        <span class="day-title">Day 5：大城府 (Ayutthaya) 古遺跡歷史巡禮 ➔ Thong Lo 特色餐酒館</span>
+        <span class="day-date">10/2 (五)</span>
+      </div>
+      <ul class="timeline">
+        <li>全天：包車前往大城府參觀世界文化遺產（樹中佛頭、崖差蒙空寺），品嚐大城船麵與河蝦</li>
+        <li>晚上：返回曼谷，前往 Thong Lo (通羅區) 體驗特色 Bar 與夜生活</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-5">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-5"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-5" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-5" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(5)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 6 -->
+    <div class="day-card" id="day-card-6">
+      <div class="day-header">
+        <span class="day-title">Day 6：恰圖恰週末市集 ➔ 高質感 Spa ➔ ICONSIAM 奢華百貨</span>
+        <span class="day-date">10/3 (六)</span>
+      </div>
+      <ul class="timeline">
+        <li>早晨：恰圖恰週末市集 (Chatuchak) 尋寶逛街</li>
+        <li>下午：安排 2 小時放鬆 Spa 療程</li>
+        <li>晚上：搭船前往 ICONSIAM 暹羅天地（室內水上市場、戶外水舞秀）</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-6">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-6"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-6" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-6" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(6)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 7 -->
+    <div class="day-card" id="day-card-7">
+      <div class="day-header">
+        <span class="day-title">Day 7：Ari 文青區咖啡館 ➔ BACC 藝文巡禮 ➔ Mahanakhon 高空玻璃步道</span>
+        <span class="day-date">10/4 (日)</span>
+      </div>
+      <ul class="timeline">
+        <li>早上：Ari 區 (阿黎) 探索文青早午餐與特色咖啡廳</li>
+        <li>下午：曼谷藝術文化中心 (BACC) 或金湯普森博物館</li>
+        <li>晚上：登上 Mahanakhon SkyWalk 挑戰透明玻璃步道看日落</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-7">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-7"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-7" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-7" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(7)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 8 -->
+    <div class="day-card" id="day-card-8">
+      <div class="day-header">
+        <span class="day-title">Day 8：泰式料理廚藝學校 ➔ 高級 Spa ➔ 昭披耶河晚餐遊船</span>
+        <span class="day-date">10/5 (一)</span>
+      </div>
+      <ul class="timeline">
+        <li>上午：參加 Thai Cooking Class（逛市場買菜 + 手作 4 道泰國菜）</li>
+        <li>下午： Let's Relax / Divana 高級 Spa 體驗</li>
+        <li>晚上：昭披耶河晚餐遊船 (Dinner Cruise) 或米其林告別晚宴</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-8">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-8"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-8" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-8" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(8)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Day 9 -->
+    <div class="day-card" id="day-card-9">
+      <div class="day-header">
+        <span class="day-title">Day 9：最後採買 ➔ 返家前往機場 (19:55 班機)</span>
+        <span class="day-date">10/6 (二)</span>
+      </div>
+      <ul class="timeline">
+        <li>上午：Gourmet Market 超市最後補貨、享用最後一餐正宗 Pad Thai</li>
+        <li>16:30：出發前往 BKK 機場辦理報到</li>
+        <li>19:55：搭機返回布里斯本</li>
+      </ul>
+      <div class="comments-section">
+        <div class="comments-header">
+          <span id="comment-count-9">💬 備註與建議 (0)</span>
+        </div>
+        <div class="comment-list" id="comment-list-9"></div>
+        <div class="comment-form">
+          <div class="form-row">
+            <input type="text" id="author-9" placeholder="你的名字 (選填)">
+          </div>
+          <div class="form-row">
+            <textarea id="text-9" placeholder="針對這天行程留下建議或想吃的餐廳..."></textarea>
+          </div>
+          <div style="text-align: right;">
+            <button class="btn" onclick="addComment(9)">新增建議</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <section class="export-container">
+    <h2>💬 完成審閱了嗎？</h2>
+    <p>修改與新增的建議已保存在此瀏覽器中。你可以將所有建議打包複製傳給朋友！</p>
+    <div class="btn-group">
+      <button class="btn" onclick="exportComments()">📋 複製所有建議內容</button>
+      <button class="btn btn-secondary" onclick="clearAllComments()">🗑️ 清空所有建議</button>
+    </div>
+  </section>
+
+  <script>
+    const STORAGE_KEY = 'bangkok_trip_comments_v1';
+
+    // 安全讀取 localStorage（防沙盒或無痕報錯）
+    function getComments() {
+      try {
+        const data = localStorage.getItem(STORAGE_KEY);
+        return data ? JSON.parse(data) : [];
+      } catch (e) {
+        console.warn('LocalStorage not available', e);
+        return [];
+      }
+    }
+
+    // 安全寫入 localStorage
+    function saveComments(comments) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
+      } catch (e) {
+        alert('此環境無法儲存留言，請使用 Safari 或 Chrome 瀏覽器開啟！');
+      }
+    }
+
+    // 新增評論
+    function addComment(dayId) {
+      const authorInput = document.getElementById(`author-${dayId}`);
+      const textInput = document.getElementById(`text-${dayId}`);
+      
+      const author = (authorInput && authorInput.value.trim()) || '熱心朋友';
+      const text = textInput ? textInput.value.trim() : '';
+
+      if (!text) {
+        alert('請輸入建議內容！');
+        return;
+      }
+
+      const comments = getComments();
+      const newComment = {
+        id: Date.now(),
+        dayId: dayId,
+        author: author,
+        text: text,
+        time: new Date().toLocaleString('zh-TW', { hour12: false })
+      };
+
+      comments.push(newComment);
+      saveComments(comments);
+
+      if (textInput) textInput.value = '';
+      renderAllComments();
+    }
+
+    // 編輯評論
+    function editComment(id) {
+      const comments = getComments();
+      const comment = comments.find(c => c.id === id);
+      if (!comment) return;
+
+      const newText = prompt('編輯你的建議：', comment.text);
+      if (newText !== null && newText.trim() !== '') {
+        comment.text = newText.trim();
+        comment.time = new Date().toLocaleString('zh-TW', { hour12: false }) + ' (已編輯)';
+        saveComments(comments);
+        renderAllComments();
+      }
+    }
+
+    // 刪除評論
+    function deleteComment(id) {
+      if (confirm('確定要刪除這條建議嗎？')) {
+        let comments = getComments();
+        comments = comments.filter(c => c.id !== id);
+        saveComments(comments);
+        renderAllComments();
+      }
+    }
+
+    // 清空全部
+    function clearAllComments() {
+      if (confirm('確定要清空所有新增的建議嗎？')) {
+        try {
+          localStorage.removeItem(STORAGE_KEY);
+        } catch (e) {}
+        renderAllComments();
+      }
+    }
+
+    // 導出 / 複製所有建議
+    function exportComments() {
+      const comments = getComments();
+      if (comments.length === 0) {
+        alert('目前還沒有任何建議可以複製喔！');
+        return;
+      }
+
+      let exportText = "=== 曼谷行程審閱建議 ===\n\n";
+      comments.forEach(c => {
+        exportText += `【Day ${c.dayId}】 ${c.author} (${c.time}):\n${c.text}\n\n`;
+      });
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(exportText).then(() => {
+          alert('已成功將所有建議複製到剪貼簿！你可以直接貼上傳給朋友。');
+        }).catch(() => {
+          prompt('複製建議內容：', exportText);
+        });
+      } else {
+        prompt('複製建議內容：', exportText);
+      }
+    }
+
+    // 渲染所有留言
+    function renderAllComments() {
+      const allComments = getComments();
+      for (let day = 1; day <= 9; day++) {
+        const dayComments = allComments.filter(c => c.dayId === day);
+        const countElem = document.getElementById(`comment-count-${day}`);
+        const listElem = document.getElementById(`comment-list-${day}`);
+
+        if (countElem) {
+          countElem.textContent = `💬 備註與建議 (${dayComments.length})`;
+        }
+
+        if (listElem) {
+          listElem.innerHTML = dayComments.map(c => `
+            <div class="comment-item">
+              <div class="comment-meta">
+                <span class="comment-author">${escapeHtml(c.author)}</span>
+                <span>${c.time}</span>
+              </div>
+              <div class="comment-content">${escapeHtml(c.text)}</div>
+              <div class="comment-actions">
+                <button class="btn-text" onclick="editComment(${c.id})">編輯</button>
+                <button class="btn-text danger" onclick="deleteComment(${c.id})">刪除</button>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    // 頁面載入時渲染既有留言
+    try {
+      renderAllComments();
+    } catch (e) {
+      console.warn('Initial render error', e);
+    }
+  </script>
+
+</body>
+</html>
