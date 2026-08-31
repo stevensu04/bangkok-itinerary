@@ -667,15 +667,16 @@
     </div>
   </section>
 
-  <!-- Firebase 官方 SDK -->
+  <!-- Firebase 官方 SDK (Realtime Database) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
 
   <script>
     const STORAGE_KEY = 'bangkok_trip_comments_v1';
     const firebaseConfig = {
       apiKey: "AIzaSyAEU9KyimTcqwrkUgtpSp222N7E60yxnJs",
       authDomain: "bangkok-itinerary-5d211.firebaseapp.com",
+      databaseURL: "https://bangkok-itinerary-5d211-default-rtdb.firebaseio.com",
       projectId: "bangkok-itinerary-5d211",
       storageBucket: "bangkok-itinerary-5d211.firebasestorage.app",
       messagingSenderId: "445975623086",
@@ -684,6 +685,7 @@
     };
 
     let db = null;
+    let commentsRef = null;
     let isCloudReady = false;
     let currentComments = [];
 
@@ -713,40 +715,48 @@
       } catch (e) {}
     }
 
-    // 初始化 Firebase 連線
+    // 初始化 Firebase Realtime Database
     try {
       firebase.initializeApp(firebaseConfig);
-      db = firebase.firestore();
+      db = firebase.database();
+      commentsRef = db.ref("comments");
 
-      // 監聽雲端即時更新
-      db.collection("comments").onSnapshot(
-        (snapshot) => {
-          isCloudReady = true;
-          const comments = [];
-          snapshot.forEach(doc => {
-            comments.push({ id: doc.id, ...doc.data() });
+      // 即時連線監聽 (WebSocket 雙向即時同步)
+      commentsRef.on("value", (snapshot) => {
+        isCloudReady = true;
+        const data = snapshot.val();
+        const comments = [];
+        if (data) {
+          Object.keys(data).forEach((key) => {
+            comments.push({ id: key, ...data[key] });
           });
-          // 依照建立時間排序
-          comments.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-          currentComments = comments;
-          saveLocalComments(comments);
-          renderAllComments(currentComments);
-          updateBadge("🟢 雲端即時連線共編中", "rgba(16, 185, 129, 0.4)");
-        },
-        (err) => {
-          console.warn("Firestore listener fallback to local", err);
-          isCloudReady = false;
-          currentComments = getLocalComments();
-          renderAllComments(currentComments);
-          updateBadge("🟡 本機模式 (請在 Firebase 啟用 Firestore)", "rgba(245, 158, 11, 0.4)");
         }
-      );
+        // 依照時間順序排序
+        comments.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        currentComments = comments;
+        saveLocalComments(comments);
+        renderAllComments(currentComments);
+        updateBadge("🟢 雲端即時連線共編中", "rgba(16, 185, 129, 0.4)");
+      }, (err) => {
+        console.warn("Realtime DB error, fallback to local", err);
+        isCloudReady = false;
+        currentComments = getLocalComments();
+        renderAllComments(currentComments);
+        updateBadge("🟡 本機儲存模式 (離線)", "rgba(245, 158, 11, 0.4)");
+      });
+
+      // 監聽連線狀態
+      db.ref(".info/connected").on("value", (snap) => {
+        if (snap.val() === true) {
+          updateBadge("🟢 雲端即時連線共編中", "rgba(16, 185, 129, 0.4)");
+        }
+      });
     } catch (e) {
       console.warn("Firebase init error", e);
       isCloudReady = false;
       currentComments = getLocalComments();
       renderAllComments(currentComments);
-      updateBadge("🟡 本機模式 (離線)", "rgba(245, 158, 11, 0.4)");
+      updateBadge("🟡 本機儲存模式 (離線)", "rgba(245, 158, 11, 0.4)");
     }
 
     // 新增建議
@@ -772,9 +782,9 @@
 
       if (textInput) textInput.value = '';
 
-      if (isCloudReady && db) {
+      if (isCloudReady && commentsRef) {
         try {
-          await db.collection("comments").add(commentData);
+          await commentsRef.push(commentData);
           return;
         } catch (e) {
           console.warn("Cloud save failed, falling back to local", e);
@@ -796,9 +806,9 @@
       const newText = prompt('編輯你的建議：', comment.text);
       if (newText !== null && newText.trim() !== '') {
         const updatedTime = new Date().toLocaleString('zh-TW', { hour12: false }) + ' (已編輯)';
-        if (isCloudReady && db && typeof id === 'string' && isNaN(Number(id))) {
+        if (isCloudReady && commentsRef && typeof id === 'string' && id.startsWith('-')) {
           try {
-            await db.collection("comments").doc(id).update({
+            await commentsRef.child(id).update({
               text: newText.trim(),
               time: updatedTime
             });
@@ -818,9 +828,9 @@
     // 刪除建議
     async function deleteComment(id) {
       if (confirm('確定要刪除這條建議嗎？')) {
-        if (isCloudReady && db && typeof id === 'string' && isNaN(Number(id))) {
+        if (isCloudReady && commentsRef && typeof id === 'string' && id.startsWith('-')) {
           try {
-            await db.collection("comments").doc(id).delete();
+            await commentsRef.child(id).remove();
             return;
           } catch (e) {
             console.warn("Cloud delete failed", e);
@@ -836,15 +846,12 @@
     // 清空全部
     async function clearAllComments() {
       if (confirm('確定要清空所有新增的建議嗎？')) {
-        if (isCloudReady && db) {
+        if (isCloudReady && commentsRef) {
           try {
-            const batch = db.batch();
-            const snapshot = await db.collection("comments").get();
-            snapshot.forEach(doc => batch.delete(doc.ref));
-            await batch.commit();
+            await commentsRef.remove();
             return;
           } catch (e) {
-            console.warn("Cloud batch delete failed", e);
+            console.warn("Cloud clear failed", e);
           }
         }
 
