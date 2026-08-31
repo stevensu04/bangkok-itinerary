@@ -1224,6 +1224,60 @@
       }
     }
 
+    // ===== 留言智慧即時雙向翻譯引擎 =====
+    const translationCache = JSON.parse(localStorage.getItem('bangkok_trip_trans_cache') || '{}');
+    // 預先寫入已知詞彙快取（零延遲）
+    translationCache['鄭王廟泰服體驗超讚'] = 'The Thai costume experience at Wat Arun was amazing!';
+    translationCache['熱心朋友'] = 'Friendly Friend';
+
+    function saveTranslationCache() {
+      try {
+        localStorage.setItem('bangkok_trip_trans_cache', JSON.stringify(translationCache));
+      } catch (e) {}
+    }
+
+    function hasChinese(str) {
+      return /[\u4e00-\u9fa5]/.test(str || '');
+    }
+
+    async function translateText(text, targetLang) {
+      if (!text || !text.trim()) return text;
+      const trimmed = text.trim();
+      const isZh = hasChinese(trimmed);
+
+      if (targetLang === 'zh' && isZh) return trimmed;
+      if (targetLang === 'en' && !isZh) return trimmed;
+
+      const sourceLang = isZh ? 'zh-TW' : 'en';
+      const targetCode = targetLang === 'en' ? 'en' : 'zh-TW';
+      const cacheKey = `${sourceLang}_${targetCode}_${trimmed}`;
+
+      if (translationCache[cacheKey]) {
+        return translationCache[cacheKey];
+      }
+      if (translationCache[trimmed] && targetLang === 'en') {
+        return translationCache[trimmed];
+      }
+
+      try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(trimmed)}&langpair=${sourceLang}|${targetCode}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data && data.responseData && data.responseData.translatedText) {
+          const result = data.responseData.translatedText;
+          if (!result.includes("MYMEMORY WARNING")) {
+            translationCache[cacheKey] = result;
+            if (targetLang === 'en') translationCache[trimmed] = result;
+            saveTranslationCache();
+            return result;
+          }
+        }
+      } catch (err) {
+        console.warn("Translation API error:", err);
+      }
+      return null;
+    }
+
     // 導出 / 複製所有建議
     function exportComments() {
       const dict = i18n[currentLang] || i18n.zh;
@@ -1234,7 +1288,12 @@
 
       let exportText = dict.exportHeader;
       currentComments.forEach(c => {
-        exportText += `【Day ${c.dayId}】 ${c.author} (${c.time}):\n${c.text}\n\n`;
+        let content = c.text;
+        if (currentLang === 'en' && hasChinese(c.text) && translationCache[c.text.trim()]) {
+          content = `${translationCache[c.text.trim()]} (Original: ${c.text})`;
+        }
+        const author = (c.author === '熱心朋友' && currentLang === 'en') ? dict.defaultAuthor : c.author;
+        exportText += `【Day ${c.dayId}】 ${author} (${c.time}):\n${content}\n\n`;
       });
 
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -1248,7 +1307,7 @@
       }
     }
 
-    // 渲染所有留言
+    // 渲染所有留言（支援留言即時自動翻譯）
     function renderAllComments(commentsList = currentComments) {
       const dict = i18n[currentLang] || i18n.zh;
       for (let day = 1; day <= 9; day++) {
@@ -1261,19 +1320,65 @@
         }
 
         if (listElem) {
-          listElem.innerHTML = dayComments.map(c => `
-            <div class="comment-item">
-              <div class="comment-meta">
-                <span class="comment-author">${escapeHtml(c.author)}</span>
-                <span>${c.time}</span>
+          listElem.innerHTML = dayComments.map(c => {
+            const authorName = (c.author === '熱心朋友' && currentLang === 'en') ? dict.defaultAuthor : c.author;
+            const commentId = `comment-content-${c.id}`;
+
+            let displayText = escapeHtml(c.text);
+            let subOriginal = '';
+
+            // 英文模式：自動翻成英文
+            if (currentLang === 'en' && hasChinese(c.text)) {
+              if (translationCache[c.text.trim()]) {
+                displayText = escapeHtml(translationCache[c.text.trim()]);
+                subOriginal = `<div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">(Original: ${escapeHtml(c.text)})</div>`;
+              } else {
+                // 非同步向翻譯 API 請求並自動更新畫面
+                translateText(c.text, 'en').then(trans => {
+                  if (trans) {
+                    const el = document.getElementById(commentId);
+                    if (el) {
+                      el.innerHTML = `<div>${escapeHtml(trans)}</div><div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">(Original: ${escapeHtml(c.text)})</div>`;
+                    }
+                  }
+                });
+              }
+            } 
+            // 中文模式：如果留言是英文，自動翻成中文
+            else if (currentLang === 'zh' && !hasChinese(c.text) && /[a-zA-Z]/.test(c.text)) {
+              const cacheKey = `en_zh-TW_${c.text.trim()}`;
+              if (translationCache[cacheKey]) {
+                displayText = escapeHtml(translationCache[cacheKey]);
+                subOriginal = `<div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">(原文: ${escapeHtml(c.text)})</div>`;
+              } else {
+                translateText(c.text, 'zh').then(trans => {
+                  if (trans) {
+                    const el = document.getElementById(commentId);
+                    if (el) {
+                      el.innerHTML = `<div>${escapeHtml(trans)}</div><div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">(原文: ${escapeHtml(c.text)})</div>`;
+                    }
+                  }
+                });
+              }
+            }
+
+            return `
+              <div class="comment-item">
+                <div class="comment-meta">
+                  <span class="comment-author">${escapeHtml(authorName)}</span>
+                  <span>${c.time}</span>
+                </div>
+                <div class="comment-content" id="${commentId}">
+                  <div>${displayText}</div>
+                  ${subOriginal}
+                </div>
+                <div class="comment-actions">
+                  <button class="btn-text" onclick="editComment('${c.id}')">${dict.btnEdit}</button>
+                  <button class="btn-text danger" onclick="deleteComment('${c.id}')">${dict.btnDelete}</button>
+                </div>
               </div>
-              <div class="comment-content">${escapeHtml(c.text)}</div>
-              <div class="comment-actions">
-                <button class="btn-text" onclick="editComment('${c.id}')">${dict.btnEdit}</button>
-                <button class="btn-text danger" onclick="deleteComment('${c.id}')">${dict.btnDelete}</button>
-              </div>
-            </div>
-          `).join('');
+            `;
+          }).join('');
         }
       }
     }
