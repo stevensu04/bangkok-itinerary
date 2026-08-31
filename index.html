@@ -366,6 +366,9 @@
   <header>
     <h1>🇹🇭 曼谷 9天8夜 自由行行程規劃</h1>
     <p>歡迎給予建議與修改意見！請在下方各天留下你的想法。</p>
+    <div id="cloud-status-badge" style="display:inline-block; font-size:0.8rem; background:rgba(255,255,255,0.25); padding:4px 12px; border-radius:20px; margin-top:10px; font-weight:500;">
+      📡 雲端即時連線中...
+    </div>
   </header>
 
   <section class="info-card">
@@ -664,31 +667,90 @@
     </div>
   </section>
 
+  <!-- Firebase 官方 SDK -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <script>
     const STORAGE_KEY = 'bangkok_trip_comments_v1';
+    const firebaseConfig = {
+      apiKey: "AIzaSyAEU9KyimTcqwrkUgtpSp222N7E60yxnJs",
+      authDomain: "bangkok-itinerary-5d211.firebaseapp.com",
+      projectId: "bangkok-itinerary-5d211",
+      storageBucket: "bangkok-itinerary-5d211.firebasestorage.app",
+      messagingSenderId: "445975623086",
+      appId: "1:445975623086:web:415ab98e04fa111456c43f",
+      measurementId: "G-8YQPZJWE52"
+    };
 
-    // 安全讀取 localStorage（防沙盒或無痕報錯）
-    function getComments() {
+    let db = null;
+    let isCloudReady = false;
+    let currentComments = [];
+
+    // 更新狀態徽章
+    function updateBadge(text, bgColor) {
+      const badge = document.getElementById('cloud-status-badge');
+      if (badge) {
+        badge.textContent = text;
+        if (bgColor) badge.style.background = bgColor;
+      }
+    }
+
+    // 本機 localStorage 備援讀取
+    function getLocalComments() {
       try {
         const data = localStorage.getItem(STORAGE_KEY);
         return data ? JSON.parse(data) : [];
       } catch (e) {
-        console.warn('LocalStorage not available', e);
         return [];
       }
     }
 
-    // 安全寫入 localStorage
-    function saveComments(comments) {
+    // 本機 localStorage 備援寫入
+    function saveLocalComments(comments) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
-      } catch (e) {
-        alert('此環境無法儲存留言，請使用 Safari 或 Chrome 瀏覽器開啟！');
-      }
+      } catch (e) {}
     }
 
-    // 新增評論
-    function addComment(dayId) {
+    // 初始化 Firebase 連線
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.firestore();
+
+      // 監聽雲端即時更新
+      db.collection("comments").onSnapshot(
+        (snapshot) => {
+          isCloudReady = true;
+          const comments = [];
+          snapshot.forEach(doc => {
+            comments.push({ id: doc.id, ...doc.data() });
+          });
+          // 依照建立時間排序
+          comments.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+          currentComments = comments;
+          saveLocalComments(comments);
+          renderAllComments(currentComments);
+          updateBadge("🟢 雲端即時連線共編中", "rgba(16, 185, 129, 0.4)");
+        },
+        (err) => {
+          console.warn("Firestore listener fallback to local", err);
+          isCloudReady = false;
+          currentComments = getLocalComments();
+          renderAllComments(currentComments);
+          updateBadge("🟡 本機模式 (請在 Firebase 啟用 Firestore)", "rgba(245, 158, 11, 0.4)");
+        }
+      );
+    } catch (e) {
+      console.warn("Firebase init error", e);
+      isCloudReady = false;
+      currentComments = getLocalComments();
+      renderAllComments(currentComments);
+      updateBadge("🟡 本機模式 (離線)", "rgba(245, 158, 11, 0.4)");
+    }
+
+    // 新增建議
+    async function addComment(dayId) {
       const authorInput = document.getElementById(`author-${dayId}`);
       const textInput = document.getElementById(`text-${dayId}`);
       
@@ -700,67 +762,107 @@
         return;
       }
 
-      const comments = getComments();
-      const newComment = {
-        id: Date.now(),
-        dayId: dayId,
+      const commentData = {
+        dayId: Number(dayId),
         author: author,
         text: text,
-        time: new Date().toLocaleString('zh-TW', { hour12: false })
+        time: new Date().toLocaleString('zh-TW', { hour12: false }),
+        createdAt: Date.now()
       };
 
-      comments.push(newComment);
-      saveComments(comments);
-
       if (textInput) textInput.value = '';
-      renderAllComments();
+
+      if (isCloudReady && db) {
+        try {
+          await db.collection("comments").add(commentData);
+          return;
+        } catch (e) {
+          console.warn("Cloud save failed, falling back to local", e);
+        }
+      }
+
+      // 本機備援
+      commentData.id = Date.now();
+      currentComments.push(commentData);
+      saveLocalComments(currentComments);
+      renderAllComments(currentComments);
     }
 
-    // 編輯評論
-    function editComment(id) {
-      const comments = getComments();
-      const comment = comments.find(c => c.id === id);
+    // 編輯建議
+    async function editComment(id) {
+      const comment = currentComments.find(c => String(c.id) === String(id));
       if (!comment) return;
 
       const newText = prompt('編輯你的建議：', comment.text);
       if (newText !== null && newText.trim() !== '') {
+        const updatedTime = new Date().toLocaleString('zh-TW', { hour12: false }) + ' (已編輯)';
+        if (isCloudReady && db && typeof id === 'string' && isNaN(Number(id))) {
+          try {
+            await db.collection("comments").doc(id).update({
+              text: newText.trim(),
+              time: updatedTime
+            });
+            return;
+          } catch (e) {
+            console.warn("Cloud update failed", e);
+          }
+        }
+
         comment.text = newText.trim();
-        comment.time = new Date().toLocaleString('zh-TW', { hour12: false }) + ' (已編輯)';
-        saveComments(comments);
-        renderAllComments();
+        comment.time = updatedTime;
+        saveLocalComments(currentComments);
+        renderAllComments(currentComments);
       }
     }
 
-    // 刪除評論
-    function deleteComment(id) {
+    // 刪除建議
+    async function deleteComment(id) {
       if (confirm('確定要刪除這條建議嗎？')) {
-        let comments = getComments();
-        comments = comments.filter(c => c.id !== id);
-        saveComments(comments);
-        renderAllComments();
+        if (isCloudReady && db && typeof id === 'string' && isNaN(Number(id))) {
+          try {
+            await db.collection("comments").doc(id).delete();
+            return;
+          } catch (e) {
+            console.warn("Cloud delete failed", e);
+          }
+        }
+
+        currentComments = currentComments.filter(c => String(c.id) !== String(id));
+        saveLocalComments(currentComments);
+        renderAllComments(currentComments);
       }
     }
 
     // 清空全部
-    function clearAllComments() {
+    async function clearAllComments() {
       if (confirm('確定要清空所有新增的建議嗎？')) {
-        try {
-          localStorage.removeItem(STORAGE_KEY);
-        } catch (e) {}
-        renderAllComments();
+        if (isCloudReady && db) {
+          try {
+            const batch = db.batch();
+            const snapshot = await db.collection("comments").get();
+            snapshot.forEach(doc => batch.delete(doc.ref));
+            await batch.commit();
+            return;
+          } catch (e) {
+            console.warn("Cloud batch delete failed", e);
+          }
+        }
+
+        currentComments = [];
+        saveLocalComments(currentComments);
+        renderAllComments(currentComments);
       }
     }
 
     // 導出 / 複製所有建議
     function exportComments() {
-      const comments = getComments();
-      if (comments.length === 0) {
+      if (currentComments.length === 0) {
         alert('目前還沒有任何建議可以複製喔！');
         return;
       }
 
       let exportText = "=== 曼谷行程審閱建議 ===\n\n";
-      comments.forEach(c => {
+      currentComments.forEach(c => {
         exportText += `【Day ${c.dayId}】 ${c.author} (${c.time}):\n${c.text}\n\n`;
       });
 
@@ -776,10 +878,9 @@
     }
 
     // 渲染所有留言
-    function renderAllComments() {
-      const allComments = getComments();
+    function renderAllComments(commentsList = currentComments) {
       for (let day = 1; day <= 9; day++) {
-        const dayComments = allComments.filter(c => c.dayId === day);
+        const dayComments = commentsList.filter(c => Number(c.dayId) === day);
         const countElem = document.getElementById(`comment-count-${day}`);
         const listElem = document.getElementById(`comment-list-${day}`);
 
@@ -796,8 +897,8 @@
               </div>
               <div class="comment-content">${escapeHtml(c.text)}</div>
               <div class="comment-actions">
-                <button class="btn-text" onclick="editComment(${c.id})">編輯</button>
-                <button class="btn-text danger" onclick="deleteComment(${c.id})">刪除</button>
+                <button class="btn-text" onclick="editComment('${c.id}')">編輯</button>
+                <button class="btn-text danger" onclick="deleteComment('${c.id}')">刪除</button>
               </div>
             </div>
           `).join('');
@@ -814,12 +915,9 @@
         .replace(/'/g, "&#039;");
     }
 
-    // 頁面載入時渲染既有留言
-    try {
-      renderAllComments();
-    } catch (e) {
-      console.warn('Initial render error', e);
-    }
+    // 頁面初次渲染
+    currentComments = getLocalComments();
+    renderAllComments(currentComments);
   </script>
 
 </body>
