@@ -14,6 +14,7 @@
       --text-muted: #64748b;
       --border-color: #e2e8f0;
       --accent-blue: #0284c7;
+      --accent-purple: #6366f1;
     }
 
     * {
@@ -249,7 +250,7 @@
       gap: 8px;
     }
 
-    input[type="text"], textarea {
+    input[type="text"], select, textarea {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid var(--border-color);
@@ -258,7 +259,7 @@
       outline: none;
     }
 
-    input[type="text"]:focus, textarea:focus {
+    input[type="text"]:focus, select:focus, textarea:focus {
       border-color: var(--primary-color);
     }
 
@@ -316,6 +317,102 @@
       display: flex;
       justify-content: center;
       gap: 12px;
+    }
+
+    /* ===== Wishlist / Todo 候補行程區樣式 ===== */
+    .wishlist-card {
+      border: 2px solid #818cf8 !important;
+      background: #faf8ff;
+      box-shadow: 0 4px 14px rgba(99, 102, 241, 0.09);
+    }
+
+    .wishlist-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .wishlist-item {
+      background: #ffffff;
+      border: 1px solid #e0e7ff;
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      transition: all 0.2s ease;
+    }
+
+    .wishlist-item:hover {
+      border-color: #a5b4fc;
+      box-shadow: 0 2px 8px rgba(99, 102, 241, 0.08);
+    }
+
+    .wishlist-item.completed {
+      background: #f8fafc;
+      border-color: var(--border-color);
+      opacity: 0.75;
+    }
+
+    .wishlist-item.completed .wishlist-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .wishlist-checkbox {
+      width: 20px;
+      height: 20px;
+      margin-top: 3px;
+      cursor: pointer;
+      accent-color: #4f46e5;
+      flex-shrink: 0;
+    }
+
+    .wishlist-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .wishlist-header-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 4px;
+    }
+
+    .wishlist-title {
+      font-weight: 700;
+      color: #1e1b4b;
+      font-size: 0.95rem;
+      word-break: break-word;
+    }
+
+    .cat-badge {
+      font-size: 0.75rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: 600;
+      background: #ede9fe;
+      color: #5b21b6;
+      white-space: nowrap;
+    }
+
+    .wishlist-note {
+      font-size: 0.85rem;
+      color: #475569;
+      margin-top: 2px;
+      word-break: break-word;
+    }
+
+    .wishlist-meta {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+      display: flex;
+      gap: 12px;
+      align-items: center;
     }
 
     /* 手機畫面最佳化 */
@@ -398,6 +495,14 @@
       .export-container {
         padding: 16px 12px;
       }
+
+      .wishlist-form .form-row {
+        flex-direction: column;
+      }
+
+      .wishlist-form .btn {
+        width: 100%;
+      }
     }
   </style>
 </head>
@@ -431,7 +536,7 @@
     </div>
   </section>
 
-  <!-- 靜態直接輸出行程，即使關閉 JS 也保證 100% 完整顯示 -->
+  <!-- 行程容器 (Day 1 到 Day 9) -->
   <div id="itinerary-container">
     
     <!-- Day 1 -->
@@ -703,6 +808,54 @@
       </div>
     </div>
 
+    <!-- ===== ✨ Day 9 之後：候補景點 & 願望清單 (Wishlist / Todo) ===== -->
+    <div class="day-card wishlist-card" id="wishlist-section">
+      <div class="day-header" style="border-bottom: 2px solid #e0e7ff;">
+        <div>
+          <span class="day-title" id="i18n-wishlist-title" style="color: #4f46e5;">✨ 候補景點 & 願望清單 (Wishlist / Todo)</span>
+          <p id="i18n-wishlist-subtitle" style="font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; font-weight: normal;">
+            想去但還沒排入的景點、餐廳或雨天備案？記在這裡，隨時彈性替換調整！
+          </p>
+        </div>
+        <span class="day-date" id="i18n-wishlist-badge" style="background: #e0e7ff; color: #4338ca;">
+          自由備案
+        </span>
+      </div>
+
+      <!-- 願望清單項目列表 -->
+      <div id="wishlist-items-container" class="wishlist-list">
+        <!-- 動態渲染項目 -->
+      </div>
+
+      <!-- 新增願望清單項目表單 -->
+      <div class="wishlist-form" style="background: #ffffff; border: 1px dashed #cbd5e1; padding: 14px; border-radius: 8px; margin-top: 16px;">
+        <div style="font-weight: 600; font-size: 0.9rem; color: #4f46e5; margin-bottom: 10px;" id="i18n-wishlist-form-title">
+          ➕ 新增願望景點 / 備案
+        </div>
+        <div class="form-row" style="margin-bottom: 8px; flex-wrap: wrap;">
+          <input type="text" id="wishlist-title-input" placeholder="景點或餐廳名稱 (例如：Bubble in the Forest 水上咖啡廳)" style="flex: 2; min-width: 200px;">
+          <select id="wishlist-category-select" style="padding: 10px 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 15px; background: white; outline: none; flex: 1; min-width: 120px;">
+            <option value="🍜 美食">🍜 美食 / Food</option>
+            <option value="🏛️ 景點">🏛️ 景點 / Sightseeing</option>
+            <option value="🛍️ 購物">🛍️ 購物 / Shopping</option>
+            <option value="💆 SPA">💆 按摩 / Spa</option>
+            <option value="🍸 夜生活">🍸 夜生活 / Nightlife</option>
+            <option value="☕ 咖啡廳">☕ 咖啡廳 / Café</option>
+            <option value="📌 其他">📌 其他 / Other</option>
+          </select>
+        </div>
+        <div class="form-row" style="margin-bottom: 8px;">
+          <input type="text" id="wishlist-note-input" placeholder="特色或備註 (例如：網美水上鞦韆、需提前預約)" style="flex: 2;">
+          <input type="text" id="wishlist-author-input" placeholder="你的名字 (選填)" style="flex: 1; min-width: 100px;">
+        </div>
+        <div style="text-align: right;">
+          <button class="btn" id="i18n-btn-add-wishlist" onclick="addWishlistItem()" style="background: #4f46e5;">
+            ➕ 加入願望清單
+          </button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
   <section class="export-container">
@@ -753,6 +906,18 @@
         defaultAuthor: "熱心朋友",
         editedSuffix: " (已編輯)",
         exportHeader: "=== 曼谷行程審閱建議 ===\n\n",
+        wishlistTitle: "✨ 候補景點 & 願望清單 (Wishlist / Todo)",
+        wishlistSubtitle: "想去但還沒排入的景點、餐廳或雨天備案？記在這裡，隨時彈性替換調整！",
+        wishlistBadge: "自由備案",
+        wishlistFormTitle: "➕ 新增願望景點 / 備案",
+        wishlistTitlePlaceholder: "景點或餐廳名稱 (例如：Bubble in the Forest 水上咖啡廳)",
+        wishlistNotePlaceholder: "特色或備註 (例如：網美水上鞦韆、需提前預約)",
+        wishlistAuthorPlaceholder: "你的名字 (選填)",
+        wishlistBtnAdd: "➕ 加入願望清單",
+        wishlistEmpty: "目前願望清單是空的，歡迎在下方新增你想去的景點或餐廳！",
+        wishlistDeleteConfirm: "確定要刪除這個願望項目嗎？",
+        wishlistScheduledTag: "已排入行程",
+        wishlistPendingTag: "待評估",
         days: [
           {
             day: 1,
@@ -877,6 +1042,18 @@
         defaultAuthor: "Friendly Friend",
         editedSuffix: " (edited)",
         exportHeader: "=== Bangkok Itinerary Review & Notes ===\n\n",
+        wishlistTitle: "✨ Wishlist & Backup Ideas (Todo / Wishlist)",
+        wishlistSubtitle: "Places, restaurants, or backup activities you want to try? Note them here for flexible planning!",
+        wishlistBadge: "Backup Ideas",
+        wishlistFormTitle: "➕ Add Wishlist / Backup Item",
+        wishlistTitlePlaceholder: "Place or restaurant name (e.g. Bubble in the Forest Café)",
+        wishlistNotePlaceholder: "Notes or highlights (e.g. Floating gazebos, book ahead)",
+        wishlistAuthorPlaceholder: "Your name (optional)",
+        wishlistBtnAdd: "➕ Add to Wishlist",
+        wishlistEmpty: "Wishlist is currently empty. Add places you'd love to visit below!",
+        wishlistDeleteConfirm: "Are you sure you want to delete this wishlist item?",
+        wishlistScheduledTag: "Scheduled",
+        wishlistPendingTag: "Pending",
         days: [
           {
             day: 1,
@@ -971,7 +1148,7 @@
       }
     };
 
-    // 語言狀態管理 (預設讀取 localStorage 或依瀏覽器語系自動判斷)
+    // 語言狀態管理
     let currentLang = localStorage.getItem('bangkok_trip_lang') || (navigator.language && navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en');
 
     function toggleLanguage() {
@@ -996,6 +1173,16 @@
       document.getElementById('i18n-flight-in-title').textContent = dict.flightInTitle;
       document.getElementById('i18n-flight-in-time').textContent = dict.flightInTime;
       document.getElementById('i18n-flight-in-detail').textContent = dict.flightInDetail;
+
+      // 願望清單區塊
+      document.getElementById('i18n-wishlist-title').textContent = dict.wishlistTitle;
+      document.getElementById('i18n-wishlist-subtitle').textContent = dict.wishlistSubtitle;
+      document.getElementById('i18n-wishlist-badge').textContent = dict.wishlistBadge;
+      document.getElementById('i18n-wishlist-form-title').textContent = dict.wishlistFormTitle;
+      document.getElementById('wishlist-title-input').placeholder = dict.wishlistTitlePlaceholder;
+      document.getElementById('wishlist-note-input').placeholder = dict.wishlistNotePlaceholder;
+      document.getElementById('wishlist-author-input').placeholder = dict.wishlistAuthorPlaceholder;
+      document.getElementById('i18n-btn-add-wishlist').textContent = dict.wishlistBtnAdd;
 
       // 匯出區塊
       document.getElementById('i18n-export-title').textContent = dict.exportTitle;
@@ -1022,12 +1209,15 @@
         if (btnAddElem) btnAddElem.textContent = dict.btnAdd;
       });
 
-      // 重新渲染留言（更新留言標題和操作文字）
+      // 重新渲染留言與願望清單
       renderAllComments();
+      renderWishlist();
     }
 
     // ===== Firebase Realtime Database 雲端即時連線 =====
     const STORAGE_KEY = 'bangkok_trip_comments_v1';
+    const STORAGE_WISHLIST_KEY = 'bangkok_trip_wishlist_v1';
+
     const firebaseConfig = {
       apiKey: "AIzaSyAEU9KyimTcqwrkUgtpSp222N7E60yxnJs",
       authDomain: "bangkok-itinerary-5d211.firebaseapp.com",
@@ -1041,8 +1231,10 @@
 
     let db = null;
     let commentsRef = null;
+    let wishlistRef = null;
     let isCloudReady = false;
     let currentComments = [];
+    let currentWishlist = [];
 
     // 更新狀態徽章
     function updateBadge(text, bgColor) {
@@ -1053,7 +1245,7 @@
       }
     }
 
-    // 本機 localStorage 備援讀取
+    // 本機 localStorage 備援讀寫
     function getLocalComments() {
       try {
         const data = localStorage.getItem(STORAGE_KEY);
@@ -1063,172 +1255,84 @@
       }
     }
 
-    // 本機 localStorage 備援寫入
     function saveLocalComments(comments) {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(comments));
       } catch (e) {}
     }
 
-    // 初始化 Firebase Realtime Database
-    try {
-      firebase.initializeApp(firebaseConfig);
-      db = firebase.database();
-      commentsRef = db.ref("comments");
-
-      // 即時連線監聽 (WebSocket 雙向即時同步)
-      commentsRef.on("value", (snapshot) => {
-        isCloudReady = true;
-        const data = snapshot.val();
-        const comments = [];
-        if (data) {
-          Object.keys(data).forEach((key) => {
-            comments.push({ id: key, ...data[key] });
-          });
-        }
-        // 依照時間順序排序
-        comments.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
-        currentComments = comments;
-        saveLocalComments(comments);
-        renderAllComments(currentComments);
-        const dict = i18n[currentLang] || i18n.zh;
-        updateBadge(dict.cloudOnline, "rgba(16, 185, 129, 0.4)");
-      }, (err) => {
-        console.warn("Realtime DB error, fallback to local", err);
-        isCloudReady = false;
-        currentComments = getLocalComments();
-        renderAllComments(currentComments);
-        const dict = i18n[currentLang] || i18n.zh;
-        updateBadge(dict.cloudOffline, "rgba(245, 158, 11, 0.4)");
-      });
-
-      // 監聽連線狀態
-      db.ref(".info/connected").on("value", (snap) => {
-        if (snap.val() === true) {
-          const dict = i18n[currentLang] || i18n.zh;
-          updateBadge(dict.cloudOnline, "rgba(16, 185, 129, 0.4)");
-        }
-      });
-    } catch (e) {
-      console.warn("Firebase init error", e);
-      isCloudReady = false;
-      currentComments = getLocalComments();
-      renderAllComments(currentComments);
-      const dict = i18n[currentLang] || i18n.zh;
-      updateBadge(dict.cloudOffline, "rgba(245, 158, 11, 0.4)");
-    }
-
-    // 新增建議
-    async function addComment(dayId) {
-      const dict = i18n[currentLang] || i18n.zh;
-      const authorInput = document.getElementById(`author-${dayId}`);
-      const textInput = document.getElementById(`text-${dayId}`);
-      
-      const author = (authorInput && authorInput.value.trim()) || dict.defaultAuthor;
-      const text = textInput ? textInput.value.trim() : '';
-
-      if (!text) {
-        alert(dict.alertInputEmpty);
-        return;
-      }
-
-      const commentData = {
-        dayId: Number(dayId),
-        author: author,
-        text: text,
-        time: new Date().toLocaleString(currentLang === 'zh' ? 'zh-TW' : 'en-US', { hour12: false }),
-        createdAt: Date.now()
-      };
-
-      if (textInput) textInput.value = '';
-
-      if (isCloudReady && commentsRef) {
-        try {
-          await commentsRef.push(commentData);
-          return;
-        } catch (e) {
-          console.warn("Cloud save failed, falling back to local", e);
-        }
-      }
-
-      // 本機備援
-      commentData.id = Date.now();
-      currentComments.push(commentData);
-      saveLocalComments(currentComments);
-      renderAllComments(currentComments);
-    }
-
-    // 編輯建議
-    async function editComment(id) {
-      const dict = i18n[currentLang] || i18n.zh;
-      const comment = currentComments.find(c => String(c.id) === String(id));
-      if (!comment) return;
-
-      const newText = prompt(dict.promptEdit, comment.text);
-      if (newText !== null && newText.trim() !== '') {
-        const updatedTime = new Date().toLocaleString(currentLang === 'zh' ? 'zh-TW' : 'en-US', { hour12: false }) + dict.editedSuffix;
-        if (isCloudReady && commentsRef && typeof id === 'string' && id.startsWith('-')) {
-          try {
-            await commentsRef.child(id).update({
-              text: newText.trim(),
-              time: updatedTime
-            });
-            return;
-          } catch (e) {
-            console.warn("Cloud update failed", e);
-          }
-        }
-
-        comment.text = newText.trim();
-        comment.time = updatedTime;
-        saveLocalComments(currentComments);
-        renderAllComments(currentComments);
+    function getLocalWishlist() {
+      try {
+        const data = localStorage.getItem(STORAGE_WISHLIST_KEY);
+        return data ? JSON.parse(data) : getDefaultWishlist();
+      } catch (e) {
+        return getDefaultWishlist();
       }
     }
 
-    // 刪除建議
-    async function deleteComment(id) {
-      const dict = i18n[currentLang] || i18n.zh;
-      if (confirm(dict.confirmDelete)) {
-        if (isCloudReady && commentsRef && typeof id === 'string' && id.startsWith('-')) {
-          try {
-            await commentsRef.child(id).remove();
-            return;
-          } catch (e) {
-            console.warn("Cloud delete failed", e);
-          }
-        }
-
-        currentComments = currentComments.filter(c => String(c.id) !== String(id));
-        saveLocalComments(currentComments);
-        renderAllComments(currentComments);
-      }
+    function saveLocalWishlist(list) {
+      try {
+        localStorage.setItem(STORAGE_WISHLIST_KEY, JSON.stringify(list));
+      } catch (e) {}
     }
 
-    // 清空全部
-    async function clearAllComments() {
-      const dict = i18n[currentLang] || i18n.zh;
-      if (confirm(dict.confirmClear)) {
-        if (isCloudReady && commentsRef) {
-          try {
-            await commentsRef.remove();
-            return;
-          } catch (e) {
-            console.warn("Cloud clear failed", e);
-          }
+    // 預設精選候補願望清單
+    function getDefaultWishlist() {
+      return [
+        {
+          id: 'seed-1',
+          title: 'Bubble in the Forest 水上漂浮咖啡廳',
+          category: '☕ 咖啡廳',
+          note: '網美打卡水上漂浮涼亭，近郊約 1 小時車程',
+          author: '推薦',
+          completed: false,
+          createdAt: 1
+        },
+        {
+          id: 'seed-2',
+          title: '吞武里海鮮市場 Thonburi Market',
+          category: '🍜 美食',
+          note: '巨大泰國大頭蝦、生蠔生魚片現夾現烤',
+          author: '推薦',
+          completed: false,
+          createdAt: 2
+        },
+        {
+          id: 'seed-3',
+          title: '朱拉隆功大學夜市美食街',
+          category: '🍜 美食',
+          note: 'Jeh O Chula 冬蔭功媽媽麵、香脆烤吐司',
+          author: '推薦',
+          completed: false,
+          createdAt: 3
+        },
+        {
+          id: 'seed-4',
+          title: '金湯普森博物館 Jim Thompson House',
+          category: '🏛️ 景點',
+          note: '傳統泰式高腳木造建築與優雅綠蔭庭院',
+          author: '推薦',
+          completed: false,
+          createdAt: 4
         }
-
-        currentComments = [];
-        saveLocalComments(currentComments);
-        renderAllComments(currentComments);
-      }
+      ];
     }
 
-    // ===== 留言智慧即時雙向翻譯引擎 =====
+    // ===== 留言 & 願望清單 智慧即時雙向翻譯引擎 =====
     const translationCache = JSON.parse(localStorage.getItem('bangkok_trip_trans_cache') || '{}');
-    // 預先寫入已知詞彙快取（零延遲）
+    
+    // 預先寫入已知詞彙快取（零延遲即時呈現）
     translationCache['鄭王廟泰服體驗超讚'] = 'The Thai costume experience at Wat Arun was amazing!';
     translationCache['熱心朋友'] = 'Friendly Friend';
+    translationCache['推薦'] = 'Recommended';
+    translationCache['Bubble in the Forest 水上漂浮咖啡廳'] = 'Bubble in the Forest Floating Café';
+    translationCache['網美打卡水上漂浮涼亭，近郊約 1 小時車程'] = 'Instagrammable floating gazebos, ~1 hr drive from city';
+    translationCache['吞武里海鮮市場 Thonburi Market'] = 'Thonburi Seafood Market Place';
+    translationCache['巨大泰國大頭蝦、生蠔生魚片現夾現烤'] = 'Giant Thai river prawns, fresh oysters & live BBQ seafood';
+    translationCache['朱拉隆功大學夜市美食街'] = 'Chulalongkorn University Night Market Food Street';
+    translationCache['Jeh O Chula 冬蔭功媽媽麵、香脆烤吐司'] = 'Jeh O Chula Tom Yum Mama noodles & crispy toast';
+    translationCache['金湯普森博物館 Jim Thompson House'] = 'Jim Thompson House Museum';
+    translationCache['傳統泰式高腳木造建築與優雅綠蔭庭院'] = 'Traditional Thai teakwood stilt house & tropical garden';
 
     function saveTranslationCache() {
       try {
@@ -1278,7 +1382,179 @@
       return null;
     }
 
-    // 導出 / 複製所有建議
+    // 初始化 Firebase Realtime Database
+    try {
+      firebase.initializeApp(firebaseConfig);
+      db = firebase.database();
+      commentsRef = db.ref("comments");
+      wishlistRef = db.ref("wishlist");
+
+      // 監聽留言 (WebSocket 即時雙向同步)
+      commentsRef.on("value", (snapshot) => {
+        isCloudReady = true;
+        const data = snapshot.val();
+        const comments = [];
+        if (data) {
+          Object.keys(data).forEach((key) => {
+            comments.push({ id: key, ...data[key] });
+          });
+        }
+        comments.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+        currentComments = comments;
+        saveLocalComments(comments);
+        renderAllComments(currentComments);
+        const dict = i18n[currentLang] || i18n.zh;
+        updateBadge(dict.cloudOnline, "rgba(16, 185, 129, 0.4)");
+      }, (err) => {
+        console.warn("Realtime DB error, fallback to local", err);
+        isCloudReady = false;
+        currentComments = getLocalComments();
+        renderAllComments(currentComments);
+        const dict = i18n[currentLang] || i18n.zh;
+        updateBadge(dict.cloudOffline, "rgba(245, 158, 11, 0.4)");
+      });
+
+      // 監聽願望清單 (WebSocket 即時雙向同步)
+      wishlistRef.on("value", (snapshot) => {
+        const data = snapshot.val();
+        const items = [];
+        if (data) {
+          Object.keys(data).forEach((key) => {
+            items.push({ id: key, ...data[key] });
+          });
+          items.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+          currentWishlist = items;
+          saveLocalWishlist(items);
+        } else {
+          // 若雲端為空，自動填入精選候補清單
+          currentWishlist = getDefaultWishlist();
+          saveLocalWishlist(currentWishlist);
+          currentWishlist.forEach(item => wishlistRef.push(item));
+        }
+        renderWishlist(currentWishlist);
+      });
+
+      // 監聽連線狀態
+      db.ref(".info/connected").on("value", (snap) => {
+        if (snap.val() === true) {
+          const dict = i18n[currentLang] || i18n.zh;
+          updateBadge(dict.cloudOnline, "rgba(16, 185, 129, 0.4)");
+        }
+      });
+    } catch (e) {
+      console.warn("Firebase init error", e);
+      isCloudReady = false;
+      currentComments = getLocalComments();
+      renderAllComments(currentComments);
+      currentWishlist = getLocalWishlist();
+      renderWishlist(currentWishlist);
+      const dict = i18n[currentLang] || i18n.zh;
+      updateBadge(dict.cloudOffline, "rgba(245, 158, 11, 0.4)");
+    }
+
+    // ===== 留言 CRUD 功能 =====
+    async function addComment(dayId) {
+      const dict = i18n[currentLang] || i18n.zh;
+      const authorInput = document.getElementById(`author-${dayId}`);
+      const textInput = document.getElementById(`text-${dayId}`);
+      
+      const author = (authorInput && authorInput.value.trim()) || dict.defaultAuthor;
+      const text = textInput ? textInput.value.trim() : '';
+
+      if (!text) {
+        alert(dict.alertInputEmpty);
+        return;
+      }
+
+      const commentData = {
+        dayId: Number(dayId),
+        author: author,
+        text: text,
+        time: new Date().toLocaleString(currentLang === 'zh' ? 'zh-TW' : 'en-US', { hour12: false }),
+        createdAt: Date.now()
+      };
+
+      if (textInput) textInput.value = '';
+
+      if (isCloudReady && commentsRef) {
+        try {
+          await commentsRef.push(commentData);
+          return;
+        } catch (e) {
+          console.warn("Cloud save failed, falling back to local", e);
+        }
+      }
+
+      // 本機備援
+      commentData.id = Date.now();
+      currentComments.push(commentData);
+      saveLocalComments(currentComments);
+      renderAllComments(currentComments);
+    }
+
+    async function editComment(id) {
+      const dict = i18n[currentLang] || i18n.zh;
+      const comment = currentComments.find(c => String(c.id) === String(id));
+      if (!comment) return;
+
+      const newText = prompt(dict.promptEdit, comment.text);
+      if (newText !== null && newText.trim() !== '') {
+        const updatedTime = new Date().toLocaleString(currentLang === 'zh' ? 'zh-TW' : 'en-US', { hour12: false }) + dict.editedSuffix;
+        if (isCloudReady && commentsRef && typeof id === 'string' && id.startsWith('-')) {
+          try {
+            await commentsRef.child(id).update({
+              text: newText.trim(),
+              time: updatedTime
+            });
+            return;
+          } catch (e) {
+            console.warn("Cloud update failed", e);
+          }
+        }
+
+        comment.text = newText.trim();
+        comment.time = updatedTime;
+        saveLocalComments(currentComments);
+        renderAllComments(currentComments);
+      }
+    }
+
+    async function deleteComment(id) {
+      const dict = i18n[currentLang] || i18n.zh;
+      if (confirm(dict.confirmDelete)) {
+        if (isCloudReady && commentsRef && typeof id === 'string' && id.startsWith('-')) {
+          try {
+            await commentsRef.child(id).remove();
+            return;
+          } catch (e) {
+            console.warn("Cloud delete failed", e);
+          }
+        }
+
+        currentComments = currentComments.filter(c => String(c.id) !== String(id));
+        saveLocalComments(currentComments);
+        renderAllComments(currentComments);
+      }
+    }
+
+    async function clearAllComments() {
+      const dict = i18n[currentLang] || i18n.zh;
+      if (confirm(dict.confirmClear)) {
+        if (isCloudReady && commentsRef) {
+          try {
+            await commentsRef.remove();
+            return;
+          } catch (e) {
+            console.warn("Cloud clear failed", e);
+          }
+        }
+
+        currentComments = [];
+        saveLocalComments(currentComments);
+        renderAllComments(currentComments);
+      }
+    }
+
     function exportComments() {
       const dict = i18n[currentLang] || i18n.zh;
       if (currentComments.length === 0) {
@@ -1307,7 +1583,6 @@
       }
     }
 
-    // 渲染所有留言（支援留言即時自動翻譯）
     function renderAllComments(commentsList = currentComments) {
       const dict = i18n[currentLang] || i18n.zh;
       for (let day = 1; day <= 9; day++) {
@@ -1333,7 +1608,6 @@
                 displayText = escapeHtml(translationCache[c.text.trim()]);
                 subOriginal = `<div style="font-size:0.75rem; color:#94a3b8; margin-top:2px;">(Original: ${escapeHtml(c.text)})</div>`;
               } else {
-                // 非同步向翻譯 API 請求並自動更新畫面
                 translateText(c.text, 'en').then(trans => {
                   if (trans) {
                     const el = document.getElementById(commentId);
@@ -1383,6 +1657,162 @@
       }
     }
 
+    // ===== 願望清單 (Wishlist / Todo) 功能 =====
+    async function addWishlistItem() {
+      const dict = i18n[currentLang] || i18n.zh;
+      const titleInput = document.getElementById('wishlist-title-input');
+      const catSelect = document.getElementById('wishlist-category-select');
+      const noteInput = document.getElementById('wishlist-note-input');
+      const authorInput = document.getElementById('wishlist-author-input');
+
+      const title = titleInput ? titleInput.value.trim() : '';
+      const category = catSelect ? catSelect.value : '📌 其他';
+      const note = noteInput ? noteInput.value.trim() : '';
+      const author = (authorInput && authorInput.value.trim()) || dict.defaultAuthor;
+
+      if (!title) {
+        alert(currentLang === 'zh' ? '請輸入景點或餐廳名稱！' : 'Please enter the place or restaurant name!');
+        return;
+      }
+
+      const newItem = {
+        title: title,
+        category: category,
+        note: note,
+        author: author,
+        completed: false,
+        createdAt: Date.now()
+      };
+
+      if (titleInput) titleInput.value = '';
+      if (noteInput) noteInput.value = '';
+
+      if (isCloudReady && wishlistRef) {
+        try {
+          await wishlistRef.push(newItem);
+          return;
+        } catch (e) {
+          console.warn("Cloud save wishlist failed", e);
+        }
+      }
+
+      newItem.id = 'local-' + Date.now();
+      currentWishlist.push(newItem);
+      saveLocalWishlist(currentWishlist);
+      renderWishlist(currentWishlist);
+    }
+
+    async function toggleWishlistItem(id, currentStatus) {
+      const newStatus = !currentStatus;
+      if (isCloudReady && wishlistRef && typeof id === 'string' && id.startsWith('-')) {
+        try {
+          await wishlistRef.child(id).update({ completed: newStatus });
+          return;
+        } catch (e) {
+          console.warn("Cloud toggle wishlist failed", e);
+        }
+      }
+
+      const item = currentWishlist.find(x => String(x.id) === String(id));
+      if (item) {
+        item.completed = newStatus;
+        saveLocalWishlist(currentWishlist);
+        renderWishlist(currentWishlist);
+      }
+    }
+
+    async function deleteWishlistItem(id) {
+      const dict = i18n[currentLang] || i18n.zh;
+      if (confirm(dict.wishlistDeleteConfirm)) {
+        if (isCloudReady && wishlistRef && typeof id === 'string' && id.startsWith('-')) {
+          try {
+            await wishlistRef.child(id).remove();
+            return;
+          } catch (e) {
+            console.warn("Cloud delete wishlist failed", e);
+          }
+        }
+
+        currentWishlist = currentWishlist.filter(x => String(x.id) !== String(id));
+        saveLocalWishlist(currentWishlist);
+        renderWishlist(currentWishlist);
+      }
+    }
+
+    function renderWishlist(list = currentWishlist) {
+      const dict = i18n[currentLang] || i18n.zh;
+      const container = document.getElementById('wishlist-items-container');
+      if (!container) return;
+
+      if (!list || list.length === 0) {
+        container.innerHTML = `<div style="text-align:center; padding: 20px; color: var(--text-muted); font-size: 0.9rem;">${dict.wishlistEmpty}</div>`;
+        return;
+      }
+
+      container.innerHTML = list.map(item => {
+        const itemId = `wishlist-item-${item.id}`;
+        const titleId = `wishlist-title-${item.id}`;
+        const noteId = `wishlist-note-${item.id}`;
+
+        let displayTitle = escapeHtml(item.title);
+        let displayNote = escapeHtml(item.note || '');
+        const authorName = (item.author === '熱心朋友' && currentLang === 'en') ? dict.defaultAuthor : (item.author === '推薦' && currentLang === 'en' ? 'Recommended' : item.author);
+
+        // 英文模式：自動翻譯景點名稱與備註
+        if (currentLang === 'en') {
+          if (hasChinese(item.title)) {
+            if (translationCache[item.title.trim()]) {
+              displayTitle = escapeHtml(translationCache[item.title.trim()]) + ` <span style="font-size:0.75rem; color:#94a3b8; font-weight:normal;">(${escapeHtml(item.title)})</span>`;
+            } else {
+              translateText(item.title, 'en').then(trans => {
+                if (trans) {
+                  const el = document.getElementById(titleId);
+                  if (el) el.innerHTML = `${escapeHtml(trans)} <span style="font-size:0.75rem; color:#94a3b8; font-weight:normal;">(${escapeHtml(item.title)})</span>`;
+                }
+              });
+            }
+          }
+
+          if (item.note && hasChinese(item.note)) {
+            if (translationCache[item.note.trim()]) {
+              displayNote = escapeHtml(translationCache[item.note.trim()]);
+            } else {
+              translateText(item.note, 'en').then(trans => {
+                if (trans) {
+                  const el = document.getElementById(noteId);
+                  if (el) el.textContent = trans;
+                }
+              });
+            }
+          }
+        }
+
+        const isChecked = item.completed ? 'checked' : '';
+        const completedClass = item.completed ? 'completed' : '';
+        const statusBadge = item.completed 
+          ? `<span style="font-size:0.7rem; background:#dcfce7; color:#15803d; padding:1px 6px; border-radius:10px;">${dict.wishlistScheduledTag}</span>` 
+          : `<span style="font-size:0.7rem; background:#f1f5f9; color:#64748b; padding:1px 6px; border-radius:10px;">${dict.wishlistPendingTag}</span>`;
+
+        return `
+          <div class="wishlist-item ${completedClass}" id="${itemId}">
+            <input type="checkbox" class="wishlist-checkbox" ${isChecked} onchange="toggleWishlistItem('${item.id}', ${Boolean(item.completed)})" title="${item.completed ? '標記為待排入' : '標記為已排入'}">
+            <div class="wishlist-body">
+              <div class="wishlist-header-row">
+                <span class="cat-badge">${escapeHtml(item.category || '📌 其他')}</span>
+                <span class="wishlist-title" id="${titleId}">${displayTitle}</span>
+                ${statusBadge}
+              </div>
+              ${item.note ? `<div class="wishlist-note" id="${noteId}">${displayNote}</div>` : ''}
+              <div class="wishlist-meta">
+                <span>👤 ${escapeHtml(authorName || '朋友')}</span>
+                <button class="btn-text danger" onclick="deleteWishlistItem('${item.id}')" style="margin-left:auto;">${dict.btnDelete}</button>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
     function escapeHtml(text) {
       return String(text)
         .replace(/&/g, "&amp;")
@@ -1392,7 +1822,7 @@
         .replace(/'/g, "&#039;");
     }
 
-    // 初始化語系設定
+    // 初始化語系設定與渲染
     applyLanguage(currentLang);
   </script>
 
