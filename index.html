@@ -168,6 +168,16 @@
       top: -6px;
     }
 
+    .timeline li.task-item::before {
+      content: none;
+    }
+
+    .completed-task span {
+      text-decoration: line-through;
+      color: #94a3b8;
+      opacity: 0.7;
+    }
+
     /* ===== 地圖區塊樣式 ===== */
     .day-map-wrapper {
       background: #f8fafc;
@@ -1486,7 +1496,17 @@
         if (titleElem) titleElem.textContent = d.title;
         if (dateElem) dateElem.textContent = d.date;
         if (timelineElem) {
-          timelineElem.innerHTML = d.details.map(item => `<li>${item}</li>`).join('');
+          timelineElem.innerHTML = d.details.map((item, idx) => {
+            const taskId = `day-${d.day}-task-${idx}`;
+            const isCompleted = currentProgress[taskId] ? 'completed-task' : '';
+            const checkedAttr = currentProgress[taskId] ? 'checked' : '';
+            return `<li class="task-item ${isCompleted}" id="li-${taskId}" style="margin-left:-20px;">
+              <label style="cursor:pointer; display:flex; align-items:flex-start; gap:8px; margin:0;">
+                <input type="checkbox" ${checkedAttr} onchange="toggleTaskProgress('${taskId}')" style="margin-top:4px; transform:scale(1.2); cursor:pointer;">
+                <span>${item}</span>
+              </label>
+            </li>`;
+          }).join('');
         }
         if (mapTitleElem) mapTitleElem.textContent = `${dict.mapTitlePrefix} (Day ${d.day})`;
         if (gmapLinkElem) {
@@ -1614,6 +1634,8 @@
     let isCloudReady = false;
     let currentComments = [];
     let currentWishlist = [];
+    let progressRef = null;
+    let currentProgress = JSON.parse(localStorage.getItem('bangkok_trip_progress') || '{}');
 
     function updateBadge(text, bgColor) {
       const badge = document.getElementById('cloud-status-badge');
@@ -1622,6 +1644,24 @@
         if (bgColor) badge.style.background = bgColor;
       }
     }
+
+    window.toggleTaskProgress = function(taskId) {
+      currentProgress[taskId] = !currentProgress[taskId];
+      localStorage.setItem('bangkok_trip_progress', JSON.stringify(currentProgress));
+      
+      const li = document.getElementById('li-' + taskId);
+      if (li) {
+        if (currentProgress[taskId]) {
+          li.classList.add('completed-task');
+        } else {
+          li.classList.remove('completed-task');
+        }
+      }
+      
+      if (isCloudReady && progressRef) {
+         progressRef.child(taskId).set(currentProgress[taskId]).catch(e => console.warn(e));
+      }
+    };
 
     function getLocalComments() {
       try {
@@ -1782,6 +1822,27 @@
       db = firebase.database();
       commentsRef = db.ref("comments");
       wishlistRef = db.ref("wishlist");
+      progressRef = db.ref("progress");
+      
+      progressRef.on("value", (snap) => {
+        if (snap.val()) {
+          currentProgress = snap.val();
+          localStorage.setItem('bangkok_trip_progress', JSON.stringify(currentProgress));
+          Object.keys(currentProgress).forEach(taskId => {
+             const li = document.getElementById('li-' + taskId);
+             const chk = li ? li.querySelector('input[type="checkbox"]') : null;
+             if (li && chk) {
+               if (currentProgress[taskId]) {
+                 li.classList.add('completed-task');
+                 chk.checked = true;
+               } else {
+                 li.classList.remove('completed-task');
+                 chk.checked = false;
+               }
+             }
+          });
+        }
+      });
 
       // 監聽留言 (WebSocket 即時雙向同步)
       commentsRef.on("value", (snapshot) => {
