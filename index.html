@@ -186,6 +186,7 @@
       margin-top: 14px;
     }
 
+    
     .comments-header {
       font-size: 0.9rem;
       font-weight: 600;
@@ -194,7 +195,21 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      list-style: none; /* Hide default */
     }
+    .comments-header::-webkit-details-marker {
+      display: none;
+    }
+    .comments-header::after {
+      content: '▼ 點擊展開/收合';
+      font-size: 0.75rem;
+      font-weight: normal;
+      color: #64748b;
+    }
+    details[open] .comments-header::after {
+      content: '▲ 點擊收合';
+    }
+
 
     .comment-list {
       display: flex;
@@ -568,11 +583,10 @@
         <li>晚上：逛 Jodd Fairs 喬德夜市（必吃火山排骨、水果冰沙）</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-1">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-1"></div>
+        </summary><div class="comment-list" id="comment-list-1"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-1" placeholder="你的名字 (選填)">
@@ -584,7 +598,7 @@
             <button class="btn" id="btn-add-1" onclick="addComment(1)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 2 -->
@@ -600,11 +614,10 @@
         <li>晚上：Asiatique 河濱碼頭夜市（摩天輪、河畔夜景）</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-2">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-2"></div>
+        </summary><div class="comment-list" id="comment-list-2"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-2" placeholder="你的名字 (選填)">
@@ -616,7 +629,7 @@
             <button class="btn" id="btn-add-2" onclick="addComment(2)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 3 -->
@@ -631,11 +644,10 @@
         <li>晚上：前往 Red Sky 或 Octave 高空酒吧品嚐調酒、欣賞曼谷夜景</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-3">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-3"></div>
+        </summary><div class="comment-list" id="comment-list-3"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-3" placeholder="你的名字 (選填)">
@@ -647,7 +659,7 @@
             <button class="btn" id="btn-add-3" onclick="addComment(3)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 4 -->
@@ -661,11 +673,10 @@
         <li>晚上：回到曼谷 Chinatown (耀華力路) 吃米其林街頭美食（蟹鉗麵、豬血湯、燕窩）</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-4">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-4"></div>
+        </summary><div class="comment-list" id="comment-list-4"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-4" placeholder="你的名字 (選填)">
@@ -677,7 +688,7 @@
             <button class="btn" id="btn-add-4" onclick="addComment(4)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 5 -->
@@ -691,11 +702,10 @@
         <li>晚上：返回曼谷，前往 Thong Lo (通羅區) 體驗特色 Bar 與夜生活</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-5">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-5"></div>
+        </summary><div class="comment-list" id="comment-list-5"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-5" placeholder="你的名字 (選填)">
@@ -707,7 +717,7 @@
             <button class="btn" id="btn-add-5" onclick="addComment(5)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 6 -->
@@ -722,11 +732,10 @@
         <li>晚上：搭船前往 ICONSIAM 暹羅天地（室內水上市場、戶外水舞秀）</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-6">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-6"></div>
+        </summary><div class="comment-list" id="comment-list-6"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-6" placeholder="你的名字 (選填)">
@@ -738,7 +747,7 @@
             <button class="btn" id="btn-add-6" onclick="addComment(6)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 7 -->
@@ -753,11 +762,10 @@
         <li>晚上：登上 Mahanakhon SkyWalk 挑戰透明玻璃步道看日落</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-7">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-7"></div>
+        </summary><div class="comment-list" id="comment-list-7"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-7" placeholder="你的名字 (選填)">
@@ -769,7 +777,7 @@
             <button class="btn" id="btn-add-7" onclick="addComment(7)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 8 -->
@@ -784,11 +792,10 @@
         <li>晚上：昭披耶河晚餐遊船 (Dinner Cruise) 或米其林告別晚宴</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-8">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-8"></div>
+        </summary><div class="comment-list" id="comment-list-8"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-8" placeholder="你的名字 (選填)">
@@ -800,7 +807,7 @@
             <button class="btn" id="btn-add-8" onclick="addComment(8)">新增建議</button>
           </div>
         </div>
-      </div>
+      </details>
     </div>
 
     <!-- Day 9 -->
@@ -815,11 +822,10 @@
         <li>19:55：搭機返回布里斯本</li>
       </ul>
 
-      <div class="comments-section">
-        <div class="comments-header">
+      <details class="comments-section">
+        <summary class="comments-header" style="cursor: pointer; user-select: none;">
           <span id="comment-count-9">💬 備註與建議 (0)</span>
-        </div>
-        <div class="comment-list" id="comment-list-9"></div>
+        </summary><div class="comment-list" id="comment-list-9"></div>
         <div class="comment-form">
           <div class="form-row">
             <input type="text" id="author-9" placeholder="你的名字 (選填)">
