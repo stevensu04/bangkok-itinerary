@@ -150,6 +150,8 @@
     .timeline {
       list-style: none;
       margin-bottom: 14px;
+      min-height: 50px;
+      padding-bottom: 10px;
     }
 
     .timeline li {
@@ -1434,6 +1436,26 @@
     // 語言狀態管理
     let currentLang = localStorage.getItem('bangkok_trip_lang') || (navigator.language && navigator.language.toLowerCase().startsWith('zh') ? 'zh' : 'en');
 
+    // ===== 行程自訂狀態管理 (Kanban / CRUD) =====
+    window.customItineraryData = JSON.parse(localStorage.getItem('bangkok_trip_custom_itinerary'));
+    if (!window.customItineraryData) {
+      window.customItineraryData = { zh: {}, en: {} };
+      ['zh', 'en'].forEach(l => {
+        i18n[l].days.forEach(d => {
+          window.customItineraryData[l][d.day] = d.details.map((text, i) => ({
+            id: 'task_' + d.day + '_' + i + '_' + Math.random().toString(36).substr(2, 5),
+            text: text
+          }));
+        });
+      });
+      localStorage.setItem('bangkok_trip_custom_itinerary', JSON.stringify(window.customItineraryData));
+    }
+    
+    function saveCustomItinerary() {
+      localStorage.setItem('bangkok_trip_custom_itinerary', JSON.stringify(window.customItineraryData));
+      applyLanguage(currentLang);
+    }
+
     function toggleLanguage() {
       currentLang = currentLang === 'zh' ? 'en' : 'zh';
       localStorage.setItem('bangkok_trip_lang', currentLang);
@@ -1496,17 +1518,30 @@
         if (titleElem) titleElem.textContent = d.title;
         if (dateElem) dateElem.textContent = d.date;
         if (timelineElem) {
-          timelineElem.innerHTML = d.details.map((item, idx) => {
-            const taskId = `day-${d.day}-task-${idx}`;
+          // Set up Drag and Drop zone
+          timelineElem.classList.add('drag-zone');
+          timelineElem.dataset.day = d.day;
+          
+          const items = window.customItineraryData[lang][d.day] || [];
+          
+          timelineElem.innerHTML = items.map((itemObj) => {
+            const taskId = itemObj.id;
             const isCompleted = currentProgress[taskId] ? 'completed-task' : '';
             const checkedAttr = currentProgress[taskId] ? 'checked' : '';
-            return `<li class="task-item ${isCompleted}" id="li-${taskId}" style="margin-left:-20px;">
-              <label style="cursor:pointer; display:flex; align-items:flex-start; gap:8px; margin:0;">
-                <input type="checkbox" ${checkedAttr} onchange="toggleTaskProgress('${taskId}')" style="margin-top:4px; transform:scale(1.2); cursor:pointer;">
-                <span>${item}</span>
+            return `<li class="task-item ${isCompleted}" id="li-${taskId}" draggable="true" data-task-id="${taskId}" data-day="${d.day}" ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" style="margin-left:-20px; background:#fff; border:1px solid #e2e8f0; padding:10px; border-radius:6px; margin-bottom:8px; display:flex; justify-content:space-between; align-items:center; box-shadow:0 1px 2px rgba(0,0,0,0.05); cursor:grab; transition: transform 0.2s;">
+              <label style="cursor:pointer; display:flex; align-items:flex-start; gap:8px; margin:0; flex-grow:1; width:calc(100% - 60px);">
+                <input type="checkbox" ${checkedAttr} onchange="toggleTaskProgress('${taskId}')" style="margin-top:4px; transform:scale(1.2); cursor:pointer; flex-shrink:0;">
+                <span style="word-break: break-word;">${escapeHtml(itemObj.text)}</span>
               </label>
+              <div style="display:flex; gap:6px; flex-shrink:0;">
+                 <button onclick="editItineraryTask('${d.day}', '${taskId}')" style="background:none; border:none; cursor:pointer; font-size:14px; padding:4px;" title="編輯">✏️</button>
+                 <button onclick="deleteItineraryTask('${d.day}', '${taskId}')" style="background:none; border:none; cursor:pointer; font-size:14px; padding:4px;" title="刪除">🗑️</button>
+              </div>
             </li>`;
           }).join('');
+          
+          // Add "Add Task" button at the bottom of the day
+          timelineElem.innerHTML += `<button onclick="addItineraryTask('${d.day}')" style="width:100%; padding:8px; margin-top:6px; border:1px dashed #cbd5e1; background:transparent; color:#64748b; border-radius:6px; cursor:pointer; font-size:0.9rem; font-weight:600; margin-left:-20px;">➕ 新增行程 (Day ${d.day})</button>`;
         }
         if (mapTitleElem) mapTitleElem.textContent = `${dict.mapTitlePrefix} (Day ${d.day})`;
         if (gmapLinkElem) {
@@ -2277,6 +2312,103 @@
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
     }
+
+    // ===== Kanban CRUD & Drag and Drop =====
+    let draggedItem = null;
+
+    window.handleDragStart = function(e) {
+      draggedItem = e.currentTarget;
+      e.dataTransfer.effectAllowed = 'move';
+      setTimeout(() => { draggedItem.style.opacity = '0.4'; }, 0);
+    };
+
+    window.handleDragEnd = function(e) {
+      setTimeout(() => { draggedItem.style.opacity = '1'; draggedItem = null; }, 0);
+    };
+
+    window.addEventListener('DOMContentLoaded', () => {
+      // Monitor DOM changes to attach events dynamically since we re-render on language switch
+      const observer = new MutationObserver(() => {
+        document.querySelectorAll('.drag-zone').forEach(zone => {
+          if (!zone.dataset.dragAttached) {
+            zone.dataset.dragAttached = 'true';
+            zone.addEventListener('dragover', e => {
+              e.preventDefault();
+              const afterElement = getDragAfterElement(zone, e.clientY);
+              const draggable = document.querySelector('.task-item[style*="opacity: 0.4"]');
+              if (!draggable) return;
+              if (afterElement == null) {
+                // insert before the button
+                zone.insertBefore(draggable, zone.lastElementChild);
+              } else {
+                zone.insertBefore(draggable, afterElement);
+              }
+            });
+            zone.addEventListener('drop', e => {
+               e.preventDefault();
+               recalculateItineraryState();
+            });
+          }
+        });
+      });
+      observer.observe(document.body, { childList: true, subtree: true });
+    });
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.task-item:not([style*="opacity: 0.4"])')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function recalculateItineraryState() {
+      document.querySelectorAll('.drag-zone').forEach(zone => {
+        const day = zone.dataset.day;
+        const tasks = [...zone.querySelectorAll('.task-item')].map(li => {
+          return {
+            id: li.dataset.taskId,
+            text: li.querySelector('span').innerText
+          };
+        });
+        window.customItineraryData[currentLang][day] = tasks;
+      });
+      saveCustomItinerary();
+    }
+
+    window.editItineraryTask = function(day, taskId) {
+      const taskIndex = window.customItineraryData[currentLang][day].findIndex(t => t.id === taskId);
+      if (taskIndex === -1) return;
+      const oldText = window.customItineraryData[currentLang][day][taskIndex].text;
+      const newText = prompt("編輯行程內容：", oldText);
+      if (newText !== null && newText.trim() !== '') {
+        window.customItineraryData[currentLang][day][taskIndex].text = newText.trim();
+        saveCustomItinerary();
+      }
+    };
+
+    window.deleteItineraryTask = function(day, taskId) {
+      if (confirm("確定要刪除這個行程嗎？")) {
+        window.customItineraryData[currentLang][day] = window.customItineraryData[currentLang][day].filter(t => t.id !== taskId);
+        saveCustomItinerary();
+      }
+    };
+
+    window.addItineraryTask = function(day) {
+      const newText = prompt("新增行程內容：");
+      if (newText !== null && newText.trim() !== '') {
+        window.customItineraryData[currentLang][day].push({
+          id: 'task_' + day + '_new_' + Math.random().toString(36).substr(2, 5),
+          text: newText.trim()
+        });
+        saveCustomItinerary();
+      }
+    };
 
     // 啟動頁面
     applyLanguage(currentLang);
