@@ -6,8 +6,6 @@
   <title>🇹🇭 曼谷 9天8夜 自由行行程 & 建議審閱 | Bangkok 9D8N Itinerary</title>
   
   <!-- Leaflet 地圖樣式庫 -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-
   <style>
     :root {
       --primary-color: #d97706;
@@ -179,83 +177,6 @@
       color: #94a3b8;
       opacity: 0.7;
     }
-
-    /* ===== 地圖區塊樣式 ===== */
-    .day-map-wrapper {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 12px;
-      margin-top: 14px;
-      margin-bottom: 16px;
-    }
-
-    .day-map-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .day-map-title {
-      font-size: 0.85rem;
-      font-weight: 700;
-      color: var(--primary-color);
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .gmap-btn {
-      font-size: 0.8rem;
-      color: var(--accent-blue);
-      text-decoration: none;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      transition: color 0.2s;
-    }
-
-    .gmap-btn:hover {
-      text-decoration: underline;
-      color: #0369a1;
-    }
-
-    .day-map {
-      height: 220px;
-      width: 100%;
-      border-radius: 8px;
-      border: 1px solid #cbd5e1;
-      z-index: 1;
-    }
-
-    .custom-map-pin {
-      background: none;
-      border: none;
-    }
-
-    .pin-badge {
-      background: #d97706;
-      color: white;
-      border-radius: 50%;
-      width: 26px;
-      height: 26px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 12px;
-      border: 2px solid white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.35);
-      transition: transform 0.2s;
-    }
-
-    .pin-badge:hover {
-      transform: scale(1.15);
-      background: #b45309;
-    }
-
     /* Comment Section */
     .comments-section {
       background: #f8fafc;
@@ -647,15 +568,6 @@
         <li>晚上：逛 Jodd Fairs 喬德夜市（必吃火山排骨、水果冰沙）</li>
       </ul>
 
-      <!-- Day 1 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-1">📍 當日路線地圖</span>
-          <a id="gmap-link-1" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-1" class="day-map"></div>
-      </div>
-
       <div class="comments-section">
         <div class="comments-header">
           <span id="comment-count-1">💬 備註與建議 (0)</span>
@@ -688,15 +600,6 @@
         <li>晚上：Asiatique 河濱碼頭夜市（摩天輪、河畔夜景）</li>
       </ul>
 
-      <!-- Day 2 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-2">📍 當日路線地圖</span>
-          <a id="gmap-link-2" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-2" class="day-map"></div>
-      </div>
-
       <div class="comments-section">
         <div class="comments-header">
           <span id="comment-count-2">💬 備註與建議 (0)</span>
@@ -728,15 +631,6 @@
         <li>晚上：前往 Red Sky 或 Octave 高空酒吧品嚐調酒、欣賞曼谷夜景</li>
       </ul>
 
-      <!-- Day 3 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-3">📍 當日路線地圖</span>
-          <a id="gmap-link-3" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-3" class="day-map"></div>
-      </div>
-
       <div class="comments-section">
         <div class="comments-header">
           <span id="comment-count-3">💬 備註與建議 (0)</span>
@@ -767,15 +661,6 @@
         <li>晚上：回到曼谷 Chinatown (耀華力路) 吃米其林街頭美食（蟹鉗麵、豬血湯、燕窩）</li>
       </ul>
 
-      <!-- Day 4 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-4">📍 當日路線地圖</span>
-          <a id="gmap-link-4" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-4" class="day-map"></div>
-      </div>
-
       <div class="comments-section">
         <div class="comments-header">
           <span id="comment-count-4">💬 備註與建議 (0)</span>
@@ -805,15 +690,6 @@
         <li>全天：包車前往大城府參觀世界文化遺產（樹中佛頭、崖差蒙空寺），品嚐大城船麵與河蝦</li>
         <li>晚上：返回曼谷，前往 Thong Lo (通羅區) 體驗特色 Bar 與夜生活</li>
       </ul>
-
-      <!-- Day 5 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-5">📍 當日路線地圖</span>
-          <a id="gmap-link-5" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-5" class="day-map"></div>
-      </div>
 
       <div class="comments-section">
         <div class="comments-header">
@@ -846,15 +722,6 @@
         <li>晚上：搭船前往 ICONSIAM 暹羅天地（室內水上市場、戶外水舞秀）</li>
       </ul>
 
-      <!-- Day 6 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-6">📍 當日路線地圖</span>
-          <a id="gmap-link-6" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-6" class="day-map"></div>
-      </div>
-
       <div class="comments-section">
         <div class="comments-header">
           <span id="comment-count-6">💬 備註與建議 (0)</span>
@@ -885,15 +752,6 @@
         <li>下午：曼谷藝術文化中心 (BACC) 或金湯普森博物館</li>
         <li>晚上：登上 Mahanakhon SkyWalk 挑戰透明玻璃步道看日落</li>
       </ul>
-
-      <!-- Day 7 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-7">📍 當日路線地圖</span>
-          <a id="gmap-link-7" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-7" class="day-map"></div>
-      </div>
 
       <div class="comments-section">
         <div class="comments-header">
@@ -926,15 +784,6 @@
         <li>晚上：昭披耶河晚餐遊船 (Dinner Cruise) 或米其林告別晚宴</li>
       </ul>
 
-      <!-- Day 8 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-8">📍 當日路線地圖</span>
-          <a id="gmap-link-8" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-8" class="day-map"></div>
-      </div>
-
       <div class="comments-section">
         <div class="comments-header">
           <span id="comment-count-8">💬 備註與建議 (0)</span>
@@ -965,15 +814,6 @@
         <li>16:30：出發前往 BKK 機場辦理報到</li>
         <li>19:55：搭機返回布里斯本</li>
       </ul>
-
-      <!-- Day 9 Map -->
-      <div class="day-map-wrapper">
-        <div class="day-map-header">
-          <span class="day-map-title" id="map-title-9">📍 當日路線地圖</span>
-          <a id="gmap-link-9" class="gmap-btn" target="_blank" rel="noopener noreferrer">🗺️ Google Maps ↗</a>
-        </div>
-        <div id="map-container-9" class="day-map"></div>
-      </div>
 
       <div class="comments-section">
         <div class="comments-header">
@@ -1048,8 +888,6 @@
   </section>
 
   <!-- Leaflet 地圖 JS 庫 -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-
   <!-- Firebase 官方 SDK (Realtime Database) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
@@ -1075,85 +913,6 @@
       }
       return rawCat;
     }
-
-    // ===== 每日景點座標與 Google Maps 路線資料 =====
-    const dayMapData = {
-      1: {
-        stops: [
-          { name_zh: "蘇凡納布機場 (BKK)", name_en: "Suvarnabhumi Airport (BKK)", lat: 13.6900, lng: 100.7501, time: "11:05" },
-          { name_zh: "Novotel Bangkok Sukhumvit 20", name_en: "Novotel Bangkok Sukhumvit 20", lat: 13.7314, lng: 100.5645, time: "14:00" },
-          { name_zh: "飯店周邊傳統泰式按摩", name_en: "Thai Massage", lat: 13.7314, lng: 100.5645, time: "15:30" },
-          { name_zh: "Jodd Fairs 喬德夜市", name_en: "Jodd Fairs Night Market", lat: 13.7567, lng: 100.5664, time: "18:30" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Suvarnabhumi+Airport/Novotel+Bangkok+Sukhumvit+20/JODD+FAIRS+Rama+9"
-      },
-      2: {
-        stops: [
-          { name_zh: "Terminal 21 航站百貨", name_en: "Terminal 21 Asok", lat: 13.7377, lng: 100.5604, time: "10:00" },
-          { name_zh: "昭披耶河畔景觀餐廳", name_en: "Riverside View Restaurant", lat: 13.7445, lng: 100.4920, time: "12:00" },
-          { name_zh: "Asiatique 碼頭夜市", name_en: "Asiatique The Riverfront", lat: 13.7047, lng: 100.5030, time: "18:00" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Terminal+21+Asok/Asiatique+The+Riverfront"
-      },
-      3: {
-        stops: [
-          { name_zh: "Siam Paragon / CentralWorld", name_en: "Siam Shopping District", lat: 13.7462, lng: 100.5348, time: "11:00" },
-          { name_zh: "四面佛 (Erawan Shrine)", name_en: "Erawan Shrine", lat: 13.7444, lng: 100.5404, time: "15:00" },
-          { name_zh: "Big C Supercenter Rajdamri", name_en: "Big C Supercenter", lat: 13.7471, lng: 100.5410, time: "16:00" },
-          { name_zh: "Red Sky 高空酒吧", name_en: "Red Sky Rooftop Bar", lat: 13.7478, lng: 100.5388, time: "18:30" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Siam+Paragon/Erawan+Shrine/Big+C+Supercenter+Rajdamri/Red+Sky"
-      },
-      4: {
-        stops: [
-          { name_zh: "美功鐵道市場", name_en: "Maeklong Railway Market", lat: 13.4075, lng: 99.9989, time: "09:30" },
-          { name_zh: "丹嫩莎朵水上市場", name_en: "Damnoen Saduak Floating Market", lat: 13.5186, lng: 99.9576, time: "11:30" },
-          { name_zh: "耀華力路中國城 (Chinatown)", name_en: "Chinatown Yaowarat", lat: 13.7412, lng: 100.5083, time: "18:00" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Maeklong+Railway+Market/Damnoen+Saduak+Floating+Market/Yaowarat+Road+Bangkok"
-      },
-      5: {
-        stops: [
-          { name_zh: "大城 瑪哈泰寺 (樹中佛頭)", name_en: "Wat Mahathat Ayutthaya", lat: 14.3570, lng: 100.5674, time: "10:00" },
-          { name_zh: "大城 崖差蒙空寺", name_en: "Wat Yai Chai Mongkhon", lat: 14.3456, lng: 100.5925, time: "13:00" },
-          { name_zh: "Thong Lo 通羅特色酒吧街", name_en: "Thong Lo Nightlife & Bars", lat: 13.7314, lng: 100.5816, time: "19:00" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Wat+Maha+That+Phra+Nakhon+Si+Ayutthaya/Wat+Yai+Chai+Mongkhon/Thong+Lo+Bangkok"
-      },
-      6: {
-        stops: [
-          { name_zh: "恰圖恰週末市集 (Chatuchak)", name_en: "Chatuchak Weekend Market", lat: 13.7999, lng: 100.5501, time: "09:30" },
-          { name_zh: "放鬆 Spa 療程", name_en: "Relaxing Premium Spa", lat: 13.7380, lng: 100.5600, time: "15:00" },
-          { name_zh: "ICONSIAM 暹羅天地", name_en: "ICONSIAM Luxury Mall", lat: 13.7267, lng: 100.5108, time: "18:00" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Chatuchak+Weekend+Market/Sukhumvit+Bangkok/ICONSIAM"
-      },
-      7: {
-        stops: [
-          { name_zh: "Ari 阿黎文青咖啡街", name_en: "Ari Hipster Café District", lat: 13.7797, lng: 100.5447, time: "10:00" },
-          { name_zh: "BACC 曼谷藝術文化中心", name_en: "Bangkok Art and Culture Centre (BACC)", lat: 13.7466, lng: 100.5303, time: "14:00" },
-          { name_zh: "King Power Mahanakhon 高空玻璃步道", name_en: "King Power Mahanakhon SkyWalk", lat: 13.7234, lng: 100.5283, time: "17:30" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Ari+Bangkok/Bangkok+Art+and+Culture+Centre/King+Power+Mahanakhon"
-      },
-      8: {
-        stops: [
-          { name_zh: "高級 Spa 芳療 (Let's Relax / Divana)", name_en: "Luxury Spa Retreat", lat: 13.7390, lng: 100.5560, time: "14:30" },
-          { name_zh: "昭披耶河晚餐遊船碼頭", name_en: "Chao Phraya Dinner Cruise Pier", lat: 13.7297, lng: 100.5139, time: "19:00" }
-        ],
-        gmap: "https://www.google.com/maps/dir/Sukhumvit+Bangkok/River+City+Bangkok"
-      },
-      9: {
-        stops: [
-          { name_zh: "Gourmet Market 超市最後採買", name_en: "Gourmet Market Shopping", lat: 13.7310, lng: 100.5698, time: "10:30" },
-          { name_zh: "蘇凡納布機場 (BKK)", name_en: "Suvarnabhumi Airport (BKK)", lat: 13.6900, lng: 100.7501, time: "16:30" }
-        ],
-        gmap: "https://www.google.com/maps/dir/EmQuartier+Gourmet+Market/Suvarnabhumi+Airport"
-      }
-    };
-
-    // 儲存所有地圖實例
-    const mapInstances = {};
 
     // ===== 多語言 (i18n) 字典資料庫 =====
     const i18n = {
@@ -1512,8 +1271,6 @@
         const authorElem = document.getElementById(`author-${d.day}`);
         const textElem = document.getElementById(`text-${d.day}`);
         const btnAddElem = document.getElementById(`btn-add-${d.day}`);
-        const mapTitleElem = document.getElementById(`map-title-${d.day}`);
-        const gmapLinkElem = document.getElementById(`gmap-link-${d.day}`);
 
         if (titleElem) titleElem.textContent = d.title;
         if (dateElem) dateElem.textContent = d.date;
@@ -1543,11 +1300,6 @@
           // Add "Add Task" button at the bottom of the day
           timelineElem.innerHTML += `<button onclick="addItineraryTask('${d.day}')" style="width:100%; padding:8px; margin-top:6px; border:1px dashed #cbd5e1; background:transparent; color:#64748b; border-radius:6px; cursor:pointer; font-size:0.9rem; font-weight:600; margin-left:-20px;">➕ 新增行程 (Day ${d.day})</button>`;
         }
-        if (mapTitleElem) mapTitleElem.textContent = `${dict.mapTitlePrefix} (Day ${d.day})`;
-        if (gmapLinkElem) {
-          gmapLinkElem.textContent = dict.gmapLinkText;
-          if (dayMapData[d.day]) gmapLinkElem.href = dayMapData[d.day].gmap;
-        }
         if (authorElem) authorElem.placeholder = dict.authorPlaceholder;
         if (textElem) textElem.placeholder = dict.textPlaceholder;
         if (btnAddElem) btnAddElem.textContent = dict.btnAdd;
@@ -1558,96 +1310,7 @@
       renderWishlist();
 
       // 更新地圖標註彈出視窗文字
-      updateMapPopups(lang);
     }
-
-    // ===== 地圖初始化功能 (Leaflet) =====
-    function initDayMaps() {
-      for (let day = 1; day <= 9; day++) {
-        const mapElem = document.getElementById(`map-container-${day}`);
-        const data = dayMapData[day];
-        if (!mapElem || !data || mapInstances[day]) continue;
-
-        try {
-          const map = L.map(`map-container-${day}`, {
-            scrollWheelZoom: false,
-            touchZoom: true,
-            zoomControl: true
-          });
-
-          // OpenStreetMap 乾淨圖磚
-          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: '© OpenStreetMap'
-          }).addTo(map);
-
-          const latlngs = [];
-          data.markers = [];
-
-          data.stops.forEach((stop, index) => {
-            const latlng = [stop.lat, stop.lng];
-            latlngs.push(latlng);
-
-            // 圓形數字標記
-            const numberIcon = L.divIcon({
-              className: 'custom-map-pin',
-              html: `<div class="pin-badge">${index + 1}</div>`,
-              iconSize: [26, 26],
-              iconAnchor: [13, 13],
-              popupAnchor: [0, -13]
-            });
-
-            const marker = L.marker(latlng, { icon: numberIcon }).addTo(map);
-            data.markers.push({ marker, stop, index });
-          });
-
-          // 繪製景點間的虛線路徑
-          if (latlngs.length > 1) {
-            L.polyline(latlngs, {
-              color: '#d97706',
-              weight: 3,
-              opacity: 0.7,
-              dashArray: '6, 8'
-            }).addTo(map);
-          }
-
-          // 自動縮放與視野邊距
-          if (latlngs.length > 0) {
-            const bounds = L.latLngBounds(latlngs);
-            map.fitBounds(bounds, { padding: [30, 30] });
-          }
-
-          mapInstances[day] = map;
-        } catch (err) {
-          console.warn(`Map init error for day ${day}:`, err);
-        }
-      }
-      updateMapPopups(currentLang);
-    }
-
-    function updateMapPopups(lang) {
-      const dict = i18n[lang] || i18n.zh;
-      for (let day = 1; day <= 9; day++) {
-        const data = dayMapData[day];
-        if (!data || !data.markers) continue;
-
-        data.markers.forEach(({ marker, stop, index }) => {
-          const placeName = lang === 'en' ? stop.name_en : stop.name_zh;
-          marker.bindPopup(`
-            <div style="font-family: inherit; font-size: 13px; line-height: 1.4;">
-              <strong style="color:#d97706;">${dict.stopPrefix} ${index + 1}:</strong> <b>${escapeHtml(placeName)}</b>
-              <div style="color:#64748b; font-size:11px; margin-top:2px;">⏰ ${stop.time}</div>
-            </div>
-          `);
-        });
-
-        // 觸發重新繪製防止隱藏容器造成破圖
-        if (mapInstances[day]) {
-          mapInstances[day].invalidateSize();
-        }
-      }
-    }
-
     // ===== Firebase Realtime Database 雲端即時連線 =====
     const STORAGE_KEY = 'bangkok_trip_comments_v1';
     const STORAGE_WISHLIST_KEY = 'bangkok_trip_wishlist_v1';
@@ -2415,7 +2078,7 @@
 
     // 延遲載入地圖確保 DOM 尺寸正確
     window.addEventListener('DOMContentLoaded', () => {
-      setTimeout(initDayMaps, 100);
+      
     });
   </script>
 
