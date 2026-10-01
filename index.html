@@ -1555,7 +1555,7 @@
         const comments = [];
         if (data) {
           Object.keys(data).forEach((key) => {
-            comments.push({ id: key, ...data[key] });
+            comments.push({ ...data[key], id: key });
           });
         }
         comments.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
@@ -1579,7 +1579,7 @@
         const items = [];
         if (data) {
           Object.keys(data).forEach((key) => {
-            items.push({ id: key, ...data[key] });
+            items.push({ ...data[key], id: key });
           });
           items.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
           currentWishlist = items;
