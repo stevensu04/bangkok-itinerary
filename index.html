@@ -1218,6 +1218,9 @@
     
     function saveCustomItinerary() {
       localStorage.setItem('bangkok_trip_custom_itinerary', JSON.stringify(window.customItineraryData));
+      if (typeof isCloudReady !== 'undefined' && isCloudReady && typeof kanbanRef !== 'undefined' && kanbanRef) {
+        kanbanRef.set(window.customItineraryData).catch(e => console.warn(e));
+      }
       applyLanguage(currentLang);
     }
 
@@ -1339,6 +1342,7 @@
     let currentComments = [];
     let currentWishlist = [];
     let progressRef = null;
+    let kanbanRef = null;
     let currentProgress = JSON.parse(localStorage.getItem('bangkok_trip_progress') || '{}');
 
     function updateBadge(text, bgColor) {
@@ -1527,6 +1531,21 @@
       commentsRef = db.ref("comments");
       wishlistRef = db.ref("wishlist");
       progressRef = db.ref("progress");
+      kanbanRef = db.ref("kanban");
+      
+      kanbanRef.on("value", (snap) => {
+        const data = snap.val();
+        if (data) {
+          window.customItineraryData = data;
+          localStorage.setItem('bangkok_trip_custom_itinerary', JSON.stringify(data));
+          applyLanguage(currentLang);
+        } else {
+          // If Firebase is empty, push our local version if it exists
+          if (window.customItineraryData) {
+            kanbanRef.set(window.customItineraryData).catch(e => console.warn(e));
+          }
+        }
+      });
       
       progressRef.on("value", (snap) => {
         if (snap.val()) {
